@@ -2,17 +2,14 @@
 
 namespace Homeful\Borrower\Classes;
 
-use Whitecube\Price\PriceAmendable;
 use Brick\Money\AbstractMoney;
-use Homeful\Property\Property;
-use Whitecube\Price\Modifier;
-use Brick\Math\RoundingMode;
-use Whitecube\Price\Vat;
 use Brick\Money\Money;
+use Homeful\Property\Property;
+use Whitecube\Price\PriceAmendable;
+use Whitecube\Price\Vat;
 
 class DisposableModifier implements PriceAmendable
 {
-
     protected string $type;
 
     protected Property $property;
@@ -54,18 +51,14 @@ class DisposableModifier implements PriceAmendable
     }
 
     /**
-     * @param AbstractMoney $build
-     * @param float $units
-     * @param bool $perUnit
-     * @param AbstractMoney|null $exclusive
-     * @param Vat|null $vat
-     * @return AbstractMoney|null
      * @throws \Brick\Math\Exception\MathException
      */
-    public function apply(AbstractMoney $build, float $units, bool $perUnit, AbstractMoney $exclusive = null, Vat $vat = null): ?AbstractMoney
+    public function apply(AbstractMoney $build, float $units, bool $perUnit, ?AbstractMoney $exclusive = null, ?Vat $vat = null): ?AbstractMoney
     {
-        if ($build instanceof Money)
+        if ($build instanceof Money) {
             return $build->multipliedBy($this->property->getDisposableIncomeRequirementMultiplier());
-        else return null;
+        } else {
+            return null;
+        }
     }
 }

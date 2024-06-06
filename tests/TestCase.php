@@ -2,9 +2,9 @@
 
 namespace Homeful\Borrower\Tests;
 
+use Homeful\Borrower\BorrowerServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Homeful\Borrower\BorrowerServiceProvider;
 
 class TestCase extends Orchestra
 {

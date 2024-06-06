@@ -2,8 +2,8 @@
 
 namespace Homeful\Borrower\Tests;
 
-use Whitecube\Price\Price;
 use Brick\Money\Money;
+use Whitecube\Price\Price;
 
 class MoneyTest extends TestCase
 {

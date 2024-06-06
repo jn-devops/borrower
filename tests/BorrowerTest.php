@@ -1,36 +1,36 @@
 <?php
 
+use Brick\Money\Money;
+use Homeful\Borrower\Borrower;
+use Homeful\Borrower\Data\BorrowerData;
 use Homeful\Borrower\Exceptions\MaximumBorrowingAgeBreached;
 use Homeful\Borrower\Exceptions\MinimumBorrowingAgeNotMet;
-use Homeful\Borrower\Data\BorrowerData;
 use Homeful\Property\Property;
-use Homeful\Borrower\Borrower;
 use Illuminate\Support\Carbon;
 use Whitecube\Price\Price;
-use Brick\Money\Money;
 
-beforeEach(function() {
+beforeEach(function () {
     $this->multiplier = 0.32;
 });
 
 dataset('property', function () {
     return [
-        [ fn () => (new Property)->setTotalContractPrice(Price::of(849999, 'PHP'))->setDisposableIncomeRequirementMultiplier($this->multiplier) ]
+        [fn () => (new Property)->setTotalContractPrice(Price::of(849999, 'PHP'))->setDisposableIncomeRequirementMultiplier($this->multiplier)],
     ];
 });
 
 dataset('borrower', function () {
     return [
-        [ fn () => (new Borrower)->setBirthdate(Carbon::parse('1999-03-17')) ]
+        [fn () => (new Borrower)->setBirthdate(Carbon::parse('1999-03-17'))],
     ];
 });
 
 dataset('borrower_with_co-borrowers', function () {
     return [
-        [ fn () => (new Borrower)->setBirthdate(Carbon::parse('1999-03-17'))->addWages(Money::of(15000.0, 'PHP'))
+        [fn () => (new Borrower)->setBirthdate(Carbon::parse('1999-03-17'))->addWages(Money::of(15000.0, 'PHP'))
             ->addCoBorrower((new Borrower)->setBirthdate(Carbon::parse('2001-03-17'))->addWages(Money::of(14000.0, 'PHP')))
-            ->addCoBorrower((new Borrower)->setBirthdate(Carbon::parse('2000-03-17'))->addWages(Money::of(13000.0, 'PHP')))
-        ]
+            ->addCoBorrower((new Borrower)->setBirthdate(Carbon::parse('2000-03-17'))->addWages(Money::of(13000.0, 'PHP'))),
+        ],
     ];
 });
 
@@ -53,9 +53,9 @@ it('has gross monthly income, monthly disposable income and joint monthly dispos
         ->toBe(0);
     expect($borrower->getDisposableMonthlyIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4800.0);
     $borrower->getCoBorrowers()->each(function ($co_borrower, $index) use ($property) {
-        match($index) {
-            0 =>   expect($co_borrower->getDisposableMonthlyIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4480.0),
-            1 =>   expect($co_borrower->getDisposableMonthlyIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4160.0),
+        match ($index) {
+            0 => expect($co_borrower->getDisposableMonthlyIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4480.0),
+            1 => expect($co_borrower->getDisposableMonthlyIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4160.0),
             default => null
         };
     });
@@ -97,8 +97,6 @@ it('has borrower data', function (Borrower $borrower) {
     expect($data->all())->toBe([
         'gross_monthly_income' => $borrower->getGrossMonthlyIncome()->inclusive()->getAmount()->toFloat(),
         'regional' => $borrower->getRegional(),
-        'birthdate' => $borrower->getBirthdate()->format('Y-m-d')
+        'birthdate' => $borrower->getBirthdate()->format('Y-m-d'),
     ]);
 })->with('borrower');
-
-
