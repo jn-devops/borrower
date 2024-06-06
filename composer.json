@@ -15,10 +15,19 @@
             "role": "Developer"
         }
     ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/Users/devops/Herd/packages/property"
+        }
+    ],
     "require": {
         "php": "^8.2",
+        "illuminate/contracts": "^10.0||^11.0",
+        "jn-devops/property": "dev-main",
+        "spatie/laravel-data": "^4.6",
         "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^10.0||^11.0"
+        "whitecube/php-prices": "^v3.0.0"
     },
     "require-dev": {
         "laravel/pint": "^1.14",
