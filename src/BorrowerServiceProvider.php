@@ -2,9 +2,9 @@
 
 namespace Homeful\Borrower;
 
+use Homeful\Borrower\Commands\BorrowerCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Homeful\Borrower\Commands\BorrowerCommand;
 
 class BorrowerServiceProvider extends PackageServiceProvider
 {

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Homeful\Borrower\Data;
@@ -12,7 +13,8 @@ class BorrowerData extends Data
         public float $gross_monthly_income,
         public bool $regional,
         public string $birthdate
-    ) {}
+    ) {
+    }
 
     public static function fromObject(Borrower $borrower): self
     {
