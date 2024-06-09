@@ -39,7 +39,7 @@ class DisposableModifier implements PriceAmendable
     public function attributes(): ?array
     {
         return [
-            'market_segment' => $this->property->getMarketSegment()->value,
+            'market_segment' => $this->property->getMarketSegment()->getName(),
             'default_disposable_income_requirement_multiplier' => $this->property->getDefaultDisposableIncomeRequirementMultiplier(),
             'disposable_income_requirement_multiplier' => $this->property->getDisposableIncomeRequirementMultiplier(),
         ];
