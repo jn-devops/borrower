@@ -40,10 +40,10 @@ class Borrower
      */
     public function setBirthdate(Carbon $value): self
     {
-        if ($value->diffInYears(Carbon::today()) < self::MINIMUM_BORROWING_AGE) {
+        if ((int) floor($value->diffInYears(Carbon::today())) < self::MINIMUM_BORROWING_AGE) {
             throw new MinimumBorrowingAgeNotMet;
         }
-        if ($value->diffInYears(Carbon::today()) > self::MAXIMUM_BORROWING_AGE) {
+        if ((int) floor($value->diffInYears(Carbon::today())) > self::MAXIMUM_BORROWING_AGE) {
             throw new MaximumBorrowingAgeBreached;
         }
         $this->birthdate = $value;

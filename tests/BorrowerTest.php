@@ -73,6 +73,18 @@ it('has monthly income and disposable monthly income', function (Property $prope
         ->toBe(0);
 })->with('property');
 
+it('has borrowing ages', function () {
+    $age = Borrower::MINIMUM_BORROWING_AGE;
+    $birthdate = Carbon::now()->addYears(-1 * $age);
+    $borrower = (new Borrower)->setBirthdate($birthdate);
+    expect((int) floor($borrower->getBirthdate()->diffInYears()))->toBe($age);
+
+    $age = Borrower::MAXIMUM_BORROWING_AGE;
+    $birthdate = Carbon::now()->addYears(-1 * $age);
+    $borrower = (new Borrower)->setBirthdate($birthdate);
+    expect((int) floor($borrower->getBirthdate()->diffInYears()))->toBe($age);
+});
+
 it('has a legal age', function () {
     $borrower = new Borrower;
     $years = Borrower::MINIMUM_BORROWING_AGE - 1;
