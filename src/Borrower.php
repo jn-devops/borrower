@@ -40,10 +40,10 @@ class Borrower
      */
     public function setBirthdate(Carbon $value): self
     {
-        if ((int) floor($value->diffInYears(Carbon::today())) < self::MINIMUM_BORROWING_AGE) {
+        if ((int) floor($value->diffInYears(Carbon::now())) < self::MINIMUM_BORROWING_AGE) {
             throw new MinimumBorrowingAgeNotMet;
         }
-        if ((int) floor($value->diffInYears(Carbon::today())) > self::MAXIMUM_BORROWING_AGE) {
+        if ((int) floor($value->diffInYears(Carbon::now())) > self::MAXIMUM_BORROWING_AGE) {
             throw new MaximumBorrowingAgeBreached;
         }
         $this->birthdate = $value;
@@ -51,9 +51,34 @@ class Borrower
         return $this;
     }
 
+    /**
+     * @return Carbon
+     */
     public function getBirthdate(): Carbon
     {
         return $this->birthdate;
+    }
+
+    /**
+     * @param int $years
+     * @return $this
+     * @throws MaximumBorrowingAgeBreached
+     * @throws MinimumBorrowingAgeNotMet
+     */
+    public function setAge(int $years): self
+    {
+        $birthdate = Carbon::now()->addYears(-1 * $years);
+        $this->setBirthdate($birthdate);
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getAge(): float
+    {
+        return round($this->getBirthdate()->diffInYears(), 1, PHP_ROUND_HALF_UP);
     }
 
     /**
@@ -66,12 +91,16 @@ class Borrower
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function getRegional(): bool
     {
-        return $this->regional;
+        return $this->regional ?? config('borrower.default_regional');
     }
 
     /**
+     * @deprecated
      * @return $this
      *
      * @throws \Brick\Math\Exception\NumberFormatException
@@ -83,6 +112,28 @@ class Borrower
         $this->gross_monthly_income = new Price(($value instanceof Money) ? $value : Money::of($value, 'PHP'));
 
         return $this;
+    }
+
+    /**
+     * @param Money|float $value
+     * @return $this
+     * @throws \Brick\Math\Exception\NumberFormatException
+     * @throws \Brick\Math\Exception\RoundingNecessaryException
+     * @throws \Brick\Money\Exception\UnknownCurrencyException
+     */
+    public function setGrossMonthlyIncome(Money|float $value): self
+    {
+        $this->gross_monthly_income = new Price(($value instanceof Money) ? $value : Money::of($value, 'PHP'));
+
+        return $this;
+    }
+
+    /**
+     * @return Price
+     */
+    public function getGrossMonthlyIncome(): Price
+    {
+        return $this->gross_monthly_income;
     }
 
     /**
@@ -99,11 +150,11 @@ class Borrower
         return $this;
     }
 
-    public function getGrossMonthlyIncome(): Price
-    {
-        return $this->gross_monthly_income;
-    }
 
+    /**
+     * @param Property $property
+     * @return Price
+     */
     public function getDisposableMonthlyIncome(Property $property): Price
     {
         return (new Price($this->gross_monthly_income->inclusive()))
@@ -120,11 +171,18 @@ class Borrower
         return $this;
     }
 
+    /**
+     * @return Collection
+     */
     public function getCoBorrowers(): Collection
     {
         return $this->co_borrowers;
     }
 
+    /**
+     * @param Property $property
+     * @return Price
+     */
     public function getJointDisposableMonthlyIncome(Property $property): Price
     {
         $disposable_monthly_income = new Price($this->getDisposableMonthlyIncome($property)->inclusive());
@@ -135,6 +193,9 @@ class Borrower
         return $disposable_monthly_income;
     }
 
+    /**
+     * @return $this
+     */
     public function getOldestAmongst(): Borrower
     {
         $oldest = $this;

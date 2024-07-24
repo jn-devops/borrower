@@ -1,6 +1,5 @@
 <?php
 
-// config for Homeful/Borrower
 return [
-
+    'default_regional' => env('DEFAULT_REGIONAL_BORROWER', FALSE)
 ];

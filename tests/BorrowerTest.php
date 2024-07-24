@@ -27,11 +27,27 @@ dataset('borrower', function () {
 
 dataset('borrower_with_co-borrowers', function () {
     return [
-        [fn () => (new Borrower)->setBirthdate(Carbon::parse('1999-03-17'))->addWages(Money::of(15000.0, 'PHP'))
-            ->addCoBorrower((new Borrower)->setBirthdate(Carbon::parse('2001-03-17'))->addWages(Money::of(14000.0, 'PHP')))
-            ->addCoBorrower((new Borrower)->setBirthdate(Carbon::parse('2000-03-17'))->addWages(Money::of(13000.0, 'PHP'))),
+        [fn () => (new Borrower)->setBirthdate(Carbon::parse('1999-03-17'))->setGrossMonthlyIncome(Money::of(15000.0, 'PHP'))
+            ->addCoBorrower((new Borrower)->setBirthdate(Carbon::parse('2001-03-17'))->setGrossMonthlyIncome(Money::of(14000.0, 'PHP')))
+            ->addCoBorrower((new Borrower)->setBirthdate(Carbon::parse('2000-03-17'))->setGrossMonthlyIncome(Money::of(13000.0, 'PHP'))),
         ],
     ];
+});
+
+it('has age', function () {
+    $borrower = (new Borrower)->setBirthdate(Carbon::parse('1999-03-17'));
+    expect($borrower->getAge())->toBe(round(Carbon::parse('1999-03-17')->diffInYears(Carbon::now()), 1, PHP_ROUND_HALF_UP));
+});
+
+it('can set age', function () {
+    $borrower = (new Borrower)->setAge(54);
+    expect($borrower->getAge())->toBe(54.0);
+    expect($borrower->getBirthdate()->format('Y-m-d'))->toBe(Carbon::now()->addYears(-54)->format('Y-m-d'));
+});
+
+it('has default regional', function () {
+    $borrower = new Borrower;
+    expect($borrower->getRegional())->toBe(config('borrower.default_regional'));
 });
 
 it('can have co-borrowers, and can determine the youngest amongst', function () {
@@ -64,7 +80,7 @@ it('has gross monthly income, monthly disposable income and joint monthly dispos
 
 it('has monthly income and disposable monthly income', function (Property $property) {
     $borrower = new Borrower;
-    $borrower->addWages($salary = Money::of(12000.0, 'PHP'));
+    $borrower->setGrossMonthlyIncome($salary = Money::of(12000.0, 'PHP'));
     $borrower->addOtherSourcesOfIncome('commissions', $commissions = Money::of(2000.0, 'PHP'));
     expect($borrower->getGrossMonthlyIncome()->base()->compareTo($salary))->toBe(0);
     expect($borrower->getGrossMonthlyIncome()->inclusive()->compareTo($salary->plus($commissions)))->toBe(0);
@@ -101,7 +117,7 @@ it('has a retirement age', function () {
 
 it('has borrower data', function (Borrower $borrower) {
     $borrower = new Borrower;
-    $borrower->setBirthdate(Carbon::parse('1999-03-17'))->addWages($salary = Money::of(12000.0, 'PHP'));
+    $borrower->setBirthdate(Carbon::parse('1999-03-17'))->setGrossMonthlyIncome($salary = Money::of(12000.0, 'PHP'));
     $data = BorrowerData::fromObject($borrower);
     expect($data->gross_monthly_income)->toBe($borrower->getGrossMonthlyIncome()->inclusive()->getAmount()->toFloat());
     expect($data->regional)->toBe($borrower->getRegional());
@@ -110,5 +126,7 @@ it('has borrower data', function (Borrower $borrower) {
         'gross_monthly_income' => $borrower->getGrossMonthlyIncome()->inclusive()->getAmount()->toFloat(),
         'regional' => $borrower->getRegional(),
         'birthdate' => $borrower->getBirthdate()->format('Y-m-d'),
+        'age' => $borrower->getAge(),
+        'as_of_date' => Carbon::today()->format('Y-m-d'),
     ]);
 })->with('borrower');
