@@ -16,8 +16,7 @@ class BorrowerData extends Data
         public string $birthdate,
         public float $age,
         public string $as_of_date
-    ) {
-    }
+    ) {}
 
     public static function fromObject(Borrower $borrower): self
     {

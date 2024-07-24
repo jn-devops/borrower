@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'default_regional' => env('DEFAULT_REGIONAL_BORROWER', FALSE)
+    'default_regional' => env('DEFAULT_REGIONAL_BORROWER', false),
 ];
