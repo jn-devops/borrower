@@ -51,6 +51,9 @@ class Borrower
         return $this;
     }
 
+    /**
+     * @return Carbon
+     */
     public function getBirthdate(): Carbon
     {
         return $this->birthdate;
@@ -70,6 +73,9 @@ class Borrower
         return $this;
     }
 
+    /**
+     * @return float
+     */
     public function getAge(): float
     {
         return round($this->getBirthdate()->diffInYears(), 1, PHP_ROUND_HALF_UP);
@@ -85,6 +91,9 @@ class Borrower
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function getRegional(): bool
     {
         return $this->regional ?? config('borrower.default_regional');
@@ -120,6 +129,9 @@ class Borrower
         return $this;
     }
 
+    /**
+     * @return Price
+     */
     public function getGrossMonthlyIncome(): Price
     {
         return $this->gross_monthly_income;
@@ -139,7 +151,23 @@ class Borrower
         return $this;
     }
 
+    /**
+     * @deprecated
+     *
+     * @param Property $property
+     * @return Price
+     */
     public function getDisposableMonthlyIncome(Property $property): Price
+    {
+        return (new Price($this->gross_monthly_income->inclusive()))
+            ->addModifier('effective-value', DisposableModifier::class, $property);
+    }
+
+    /**
+     * @param Property $property
+     * @return Price
+     */
+    public function getMonthlyDisposableIncome(Property $property): Price
     {
         return (new Price($this->gross_monthly_income->inclusive()))
             ->addModifier('effective-value', DisposableModifier::class, $property);
@@ -155,11 +183,20 @@ class Borrower
         return $this;
     }
 
+    /**
+     * @return Collection
+     */
     public function getCoBorrowers(): Collection
     {
         return $this->co_borrowers;
     }
 
+    /**
+     * @deprecated
+     *
+     * @param Property $property
+     * @return Price
+     */
     public function getJointDisposableMonthlyIncome(Property $property): Price
     {
         $disposable_monthly_income = new Price($this->getDisposableMonthlyIncome($property)->inclusive());
@@ -171,7 +208,21 @@ class Borrower
     }
 
     /**
-     * @return $this
+     * @param Property $property
+     * @return Price
+     */
+    public function getJointMonthlyDisposableIncome(Property $property): Price
+    {
+        $monthly_disposable_income = new Price($this->getMonthlyDisposableIncome($property)->inclusive());
+        $this->co_borrowers->each(function (Borrower $co_borrower) use ($monthly_disposable_income, $property) {
+            $monthly_disposable_income->addModifier('co-borrower', $co_borrower->getMonthlyDisposableIncome($property)->inclusive());
+        });
+
+        return $monthly_disposable_income;
+    }
+
+    /**
+     * @return Borrower
      */
     public function getOldestAmongst(): Borrower
     {

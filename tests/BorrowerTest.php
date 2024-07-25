@@ -64,18 +64,18 @@ it('can have co-borrowers, and can determine the youngest amongst', function () 
 it('has gross monthly income, monthly disposable income and joint monthly disposable income', function (Borrower $borrower, Property $property) {
     expect($borrower->getGrossMonthlyIncome()->compareTo(Money::of(15000.0, 'PHP')))->toBe(0);
     expect($property->getTotalContractPrice()->inclusive()->getAmount()->toFloat())->toBe(849999.0);
-    expect($borrower->getDisposableMonthlyIncome($property)
+    expect($borrower->getMonthlyDisposableIncome($property)
         ->compareTo($borrower->getGrossMonthlyIncome()->inclusive()->multipliedBy($property->getDisposableIncomeRequirementMultiplier())))
         ->toBe(0);
-    expect($borrower->getDisposableMonthlyIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4800.0);
+    expect($borrower->getMonthlyDisposableIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4800.0);
     $borrower->getCoBorrowers()->each(function ($co_borrower, $index) use ($property) {
         match ($index) {
-            0 => expect($co_borrower->getDisposableMonthlyIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4480.0),
-            1 => expect($co_borrower->getDisposableMonthlyIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4160.0),
+            0 => expect($co_borrower->getMonthlyDisposableIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4480.0),
+            1 => expect($co_borrower->getMonthlyDisposableIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4160.0),
             default => null
         };
     });
-    expect($borrower->getJointDisposableMonthlyIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4800.0 + 4480.0 + 4160.0);
+    expect($borrower->getJointMonthlyDisposableIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4800.0 + 4480.0 + 4160.0);
 })->with('borrower_with_co-borrowers', 'property');
 
 it('has monthly income and disposable monthly income', function (Property $property) {
@@ -84,7 +84,7 @@ it('has monthly income and disposable monthly income', function (Property $prope
     $borrower->addOtherSourcesOfIncome('commissions', $commissions = Money::of(2000.0, 'PHP'));
     expect($borrower->getGrossMonthlyIncome()->base()->compareTo($salary))->toBe(0);
     expect($borrower->getGrossMonthlyIncome()->inclusive()->compareTo($salary->plus($commissions)))->toBe(0);
-    expect($borrower->getDisposableMonthlyIncome($property)
+    expect($borrower->getMonthlyDisposableIncome($property)
         ->compareTo($borrower->getGrossMonthlyIncome()->inclusive()->multipliedBy($property->getDisposableIncomeRequirementMultiplier())))
         ->toBe(0);
 })->with('property');
