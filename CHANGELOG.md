@@ -2,6 +2,10 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.0.6 - 2024-07-25
+
+deprecate getDisposableMonthlyIncome
+
 ## #v1.0.5 - 2024-07-24
 
 deprecate addWages
