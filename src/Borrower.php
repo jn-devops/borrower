@@ -9,8 +9,8 @@ use Homeful\Borrower\Exceptions\MinimumBorrowingAgeNotMet;
 use Homeful\Property\Property;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Whitecube\Price\Price;
 use Illuminate\Support\Str;
+use Whitecube\Price\Price;
 
 class Borrower
 {
