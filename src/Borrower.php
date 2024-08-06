@@ -10,6 +10,7 @@ use Homeful\Property\Property;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Whitecube\Price\Price;
+use Illuminate\Support\Str;
 
 class Borrower
 {
@@ -27,9 +28,23 @@ class Borrower
 
     public int $maximum_age_at_loan_maturity = 70; //years old
 
+    public string $contact_id;
+
     public function __construct()
     {
         $this->co_borrowers = new Collection;
+    }
+
+    public function setContactId(string $contact_id): self
+    {
+        $this->contact_id = $contact_id;
+
+        return $this;
+    }
+
+    public function getContactId(): string
+    {
+        return $this->contact_id ?? Str::uuid();
     }
 
     /**

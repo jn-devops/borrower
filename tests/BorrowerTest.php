@@ -130,3 +130,11 @@ it('has borrower data', function (Borrower $borrower) {
         'as_of_date' => Carbon::today()->format('Y-m-d'),
     ]);
 })->with('borrower');
+
+it('has contact id', function () {
+    $borrower = new Borrower;
+    expect($borrower->getContactId())->toBeUuid();
+    $contact_id = 'ABC-123';
+    $borrower->setContactId($contact_id);
+    expect($borrower->getContactId())->toBe($contact_id);
+});
