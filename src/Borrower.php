@@ -35,6 +35,10 @@ class Borrower
         $this->co_borrowers = new Collection;
     }
 
+    /**
+     * @param string $contact_id
+     * @return $this
+     */
     public function setContactId(string $contact_id): self
     {
         $this->contact_id = $contact_id;
@@ -42,6 +46,9 @@ class Borrower
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getContactId(): string
     {
         return $this->contact_id ?? Str::uuid();
@@ -66,6 +73,9 @@ class Borrower
         return $this;
     }
 
+    /**
+     * @return Carbon
+     */
     public function getBirthdate(): Carbon
     {
         return $this->birthdate;
@@ -85,6 +95,9 @@ class Borrower
         return $this;
     }
 
+    /**
+     * @return float
+     */
     public function getAge(): float
     {
         return round($this->getBirthdate()->diffInYears(), 1, PHP_ROUND_HALF_UP);
@@ -100,6 +113,9 @@ class Borrower
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function getRegional(): bool
     {
         return $this->regional ?? config('borrower.default_regional');
@@ -122,19 +138,24 @@ class Borrower
     }
 
     /**
+     * @param Price|Money|float $value
      * @return $this
-     *
      * @throws \Brick\Math\Exception\NumberFormatException
      * @throws \Brick\Math\Exception\RoundingNecessaryException
      * @throws \Brick\Money\Exception\UnknownCurrencyException
      */
-    public function setGrossMonthlyIncome(Money|float $value): self
+    public function setGrossMonthlyIncome(Price|Money|float $value): self
     {
-        $this->gross_monthly_income = new Price(($value instanceof Money) ? $value : Money::of($value, 'PHP'));
+        $this->gross_monthly_income = ($value instanceof Price)
+            ? $value
+            : new Price(($value instanceof Money) ? $value : Money::of($value, 'PHP'));
 
         return $this;
     }
 
+    /**
+     * @return Price
+     */
     public function getGrossMonthlyIncome(): Price
     {
         return $this->gross_monthly_income;
@@ -163,6 +184,10 @@ class Borrower
             ->addModifier('effective-value', DisposableModifier::class, $property);
     }
 
+    /**
+     * @param Property $property
+     * @return Price
+     */
     public function getMonthlyDisposableIncome(Property $property): Price
     {
         return (new Price($this->gross_monthly_income->inclusive()))
@@ -179,6 +204,9 @@ class Borrower
         return $this;
     }
 
+    /**
+     * @return Collection
+     */
     public function getCoBorrowers(): Collection
     {
         return $this->co_borrowers;
@@ -197,6 +225,10 @@ class Borrower
         return $disposable_monthly_income;
     }
 
+    /**
+     * @param Property $property
+     * @return Price
+     */
     public function getJointMonthlyDisposableIncome(Property $property): Price
     {
         $monthly_disposable_income = new Price($this->getMonthlyDisposableIncome($property)->inclusive());
@@ -207,6 +239,9 @@ class Borrower
         return $monthly_disposable_income;
     }
 
+    /**
+     * @return $this
+     */
     public function getOldestAmongst(): Borrower
     {
         $oldest = $this;
