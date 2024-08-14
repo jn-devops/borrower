@@ -2,6 +2,10 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.0.8 - 2024-08-14
+
+allow Price in setGrossMonthlyIncome
+
 ## #v1.0.7 - 2024-08-06
 
 add contact id
