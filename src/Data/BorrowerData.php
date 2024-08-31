@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Homeful\Borrower\Data;
 
-use Carbon\Carbon;
 use Homeful\Borrower\Borrower;
 use Spatie\LaravelData\Data;
+use Carbon\Carbon;
 
 class BorrowerData extends Data
 {

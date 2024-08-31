@@ -2,11 +2,11 @@
 
 namespace Homeful\Borrower\Classes;
 
-use Brick\Money\AbstractMoney;
-use Brick\Money\Money;
-use Homeful\Property\Property;
 use Whitecube\Price\PriceAmendable;
+use Brick\Money\AbstractMoney;
+use Homeful\Property\Property;
 use Whitecube\Price\Vat;
+use Brick\Money\Money;
 
 class DisposableModifier implements PriceAmendable
 {

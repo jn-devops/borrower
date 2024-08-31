@@ -1,13 +1,13 @@
 <?php
 
-use Brick\Money\Money;
-use Homeful\Borrower\Borrower;
-use Homeful\Borrower\Data\BorrowerData;
 use Homeful\Borrower\Exceptions\MaximumBorrowingAgeBreached;
 use Homeful\Borrower\Exceptions\MinimumBorrowingAgeNotMet;
+use Homeful\Borrower\Data\BorrowerData;
+use Homeful\Borrower\Borrower;
 use Homeful\Property\Property;
 use Illuminate\Support\Carbon;
 use Whitecube\Price\Price;
+use Brick\Money\Money;
 
 beforeEach(function () {
     $this->multiplier = 0.32;

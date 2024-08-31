@@ -2,15 +2,15 @@
 
 namespace Homeful\Borrower;
 
-use Brick\Money\Money;
-use Homeful\Borrower\Classes\DisposableModifier;
 use Homeful\Borrower\Exceptions\MaximumBorrowingAgeBreached;
 use Homeful\Borrower\Exceptions\MinimumBorrowingAgeNotMet;
+use Homeful\Borrower\Classes\DisposableModifier;
+use Illuminate\Support\Collection;
 use Homeful\Property\Property;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Whitecube\Price\Price;
+use Brick\Money\Money;
 
 class Borrower
 {
