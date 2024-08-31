@@ -18,8 +18,6 @@ class BorrowerServiceProvider extends PackageServiceProvider
         $package
             ->name('borrower')
             ->hasConfigFile(['borrower'])
-            ->hasViews()
-            ->hasMigration('create_borrower_table')
             ->hasCommand(BorrowerCommand::class);
     }
 }
