@@ -2,6 +2,10 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.1.0 - 2024-08-31
+
+fix styling
+
 ## #v1.0.9 - 2024-08-31
 
 remove the views and migration files from vendor publish
