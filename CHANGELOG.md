@@ -2,6 +2,10 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.0.9 - 2024-08-31
+
+remove the views and migration files from vendor publish
+
 ## #v1.0.8 - 2024-08-14
 
 allow Price in setGrossMonthlyIncome
