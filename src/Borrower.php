@@ -8,8 +8,10 @@ use Homeful\Borrower\Classes\DisposableModifier;
 use Illuminate\Support\Collection;
 use Homeful\Property\Property;
 use Illuminate\Support\Carbon;
+use Brick\Math\RoundingMode;
 use Illuminate\Support\Str;
 use Whitecube\Price\Price;
+
 use Brick\Money\Money;
 
 class Borrower
@@ -206,7 +208,7 @@ class Borrower
     {
         $monthly_disposable_income = new Price($this->getMonthlyDisposableIncome($property)->inclusive());
         $this->co_borrowers->each(function (Borrower $co_borrower) use ($monthly_disposable_income, $property) {
-            $monthly_disposable_income->addModifier('co-borrower', $co_borrower->getMonthlyDisposableIncome($property)->inclusive());
+            $monthly_disposable_income->addModifier('co-borrower', $co_borrower->getMonthlyDisposableIncome($property)->inclusive(), roundingMode: RoundingMode::CEILING);
         });
 
         return $monthly_disposable_income;
