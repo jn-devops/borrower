@@ -5,6 +5,7 @@ namespace Homeful\Borrower\Classes;
 use Whitecube\Price\PriceAmendable;
 use Brick\Money\AbstractMoney;
 use Homeful\Property\Property;
+use Brick\Math\RoundingMode;
 use Whitecube\Price\Vat;
 use Brick\Money\Money;
 
@@ -56,7 +57,7 @@ class DisposableModifier implements PriceAmendable
     public function apply(AbstractMoney $build, float $units, bool $perUnit, ?AbstractMoney $exclusive = null, ?Vat $vat = null): ?AbstractMoney
     {
         if ($build instanceof Money) {
-            return $build->multipliedBy($this->property->getDisposableIncomeRequirementMultiplier());
+            return $build->multipliedBy($this->property->getDisposableIncomeRequirementMultiplier(), roundingMode: RoundingMode::CEILING);
         } else {
             return null;
         }
