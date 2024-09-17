@@ -2,6 +2,10 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.1.1 - 2024-09-17
+
+add RoundingMode to getJointMonthlyDisposableIncome
+
 ## #v1.1.0 - 2024-08-31
 
 fix styling
