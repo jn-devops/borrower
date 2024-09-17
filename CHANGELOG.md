@@ -2,6 +2,10 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.1.2 - 2024-09-17
+
+add RoundingMode to DisposableModifier::apply'
+
 ## #v1.1.1 - 2024-09-17
 
 add RoundingMode to getJointMonthlyDisposableIncome
