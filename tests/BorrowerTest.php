@@ -34,8 +34,9 @@ dataset('borrower_with_co-borrowers', function () {
     ];
 });
 
-it('has age', function () {
+it('has age and formatted age', function () {
     $borrower = (new Borrower)->setBirthdate(Carbon::parse('1999-03-17'));
+    expect($borrower->getFormattedAge(Carbon::parse('2029-03-17')))->toBe('30 years old');
     expect($borrower->getAge())->toBe(round(Carbon::parse('1999-03-17')->diffInYears(Carbon::now()), 1, PHP_ROUND_HALF_UP));
 });
 
@@ -90,12 +91,23 @@ it('has monthly income and disposable monthly income', function (Property $prope
 })->with('property');
 
 it('has borrowing ages', function () {
-    $age = Borrower::MINIMUM_BORROWING_AGE;
+    expect(config('borrower.borrowing_age.minimum'))->toBe(18);
+    expect(Borrower::getMinimumBorrowingAge())->toBe(config('borrower.borrowing_age.minimum'));
+    expect(config('borrower.borrowing_age.maximum.hdmf'))->toBe(60);
+    expect(config('borrower.borrowing_age.maximum.rcbc'))->toBe(60);
+    expect(config('borrower.borrowing_age.maximum.cbc'))->toBe(60);
+    expect(config('borrower.borrowing_age.maximum.default'))->toBe(60);
+    expect(Borrower::getMaximumBorrowingAge('hdmf'))->toBe(config('borrower.borrowing_age.maximum.hdmf'));
+    expect(Borrower::getMaximumBorrowingAge('rcbc'))->toBe(config('borrower.borrowing_age.maximum.rcbc'));
+    expect(Borrower::getMaximumBorrowingAge('cbc'))->toBe(config('borrower.borrowing_age.maximum.cbc'));
+    expect(Borrower::getMaximumBorrowingAge())->toBe(config('borrower.borrowing_age.maximum.default'));
+
+    $age = Borrower::getMinimumBorrowingAge();
     $birthdate = Carbon::now()->addYears(-1 * $age);
     $borrower = (new Borrower)->setBirthdate($birthdate);
     expect((int) floor($borrower->getBirthdate()->diffInYears()))->toBe($age);
 
-    $age = Borrower::MAXIMUM_BORROWING_AGE;
+    $age = Borrower::getMaximumBorrowingAge();
     $birthdate = Carbon::now()->addYears(-1 * $age);
     $borrower = (new Borrower)->setBirthdate($birthdate);
     expect((int) floor($borrower->getBirthdate()->diffInYears()))->toBe($age);
@@ -103,14 +115,14 @@ it('has borrowing ages', function () {
 
 it('has a legal age', function () {
     $borrower = new Borrower;
-    $years = Borrower::MINIMUM_BORROWING_AGE - 1;
+    $years = Borrower::getMinimumBorrowingAge() - 1;
     $birthdate = Carbon::today()->addYears(-$years);
     $borrower->setBirthdate($birthdate);
 })->expectException(MinimumBorrowingAgeNotMet::class);
 
 it('has a retirement age', function () {
     $borrower = new Borrower;
-    $years = Borrower::MAXIMUM_BORROWING_AGE + 1;
+    $years = Borrower::getMaximumBorrowingAge() + 1;
     $birthdate = Carbon::today()->addYears(-$years);
     $borrower->setBirthdate($birthdate);
 })->expectException(MaximumBorrowingAgeBreached::class);
