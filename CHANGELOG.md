@@ -2,6 +2,11 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.1.3 - 2024-09-22
+
+refactor and add getFormattedAge
+add employment type, payment mode and work area'
+
 ## #v1.1.2 - 2024-09-17
 
 add RoundingMode to DisposableModifier::apply'
