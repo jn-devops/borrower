@@ -2,6 +2,8 @@
 
 use Homeful\Borrower\Exceptions\MaximumBorrowingAgeBreached;
 use Homeful\Borrower\Exceptions\MinimumBorrowingAgeNotMet;
+use Homeful\Borrower\Enums\{PaymentMode, WorkArea};
+use Homeful\Borrower\Enums\EmploymentType;
 use Homeful\Borrower\Data\BorrowerData;
 use Homeful\Borrower\Borrower;
 use Homeful\Property\Property;
@@ -46,9 +48,42 @@ it('can set age', function () {
     expect($borrower->getBirthdate()->format('Y-m-d'))->toBe(Carbon::now()->addYears(-54)->format('Y-m-d'));
 });
 
-it('has default regional', function () {
+it('has regional, work area', function () {
     $borrower = new Borrower;
     expect($borrower->getRegional())->toBe(config('borrower.default_regional'));
+    expect(config('borrower.default_regional'))->toBe(false);
+    expect($borrower->getRegional())->toBe(false);
+    expect($borrower->getWorkArea())->toBe(WorkArea::HUC);
+    $borrower->setRegional(true);
+    expect($borrower->getWorkArea())->toBe(WorkArea::REGION);
+    $borrower->setWorkArea(WorkArea::HUC);
+    expect($borrower->getRegional())->toBeFalse();
+    $borrower->setWorkArea(WorkArea::REGION);
+    expect($borrower->getRegional())->toBeTrue();
+});
+
+it('has employment type', function () {
+    $borrower = new Borrower;
+    expect($borrower->getEmploymentType())->toBe(EmploymentType::LOCAL_PRIVATE);
+    $borrower->setEmploymentType(EmploymentType::LOCAL_GOVERNMENT);
+    expect($borrower->getEmploymentType())->toBe(EmploymentType::LOCAL_GOVERNMENT);
+    $borrower->setEmploymentType(EmploymentType::OFW);
+    expect($borrower->getEmploymentType())->toBe(EmploymentType::OFW);
+    $borrower->setEmploymentType(EmploymentType::BUSINESS);
+    expect($borrower->getEmploymentType())->toBe(EmploymentType::BUSINESS);
+    $borrower->setEmploymentType(EmploymentType::LOCAL_PRIVATE);
+    expect($borrower->getEmploymentType())->toBe(EmploymentType::LOCAL_PRIVATE);
+});
+
+it('has payment mode', function () {
+    $borrower = new Borrower;
+    expect($borrower->getPaymentMode())->toBe(PaymentMode::ONLINE);
+    $borrower->setPaymentMode(PaymentMode::SALARY_DEDUCTION);
+    expect($borrower->getPaymentMode())->toBe(PaymentMode::SALARY_DEDUCTION);
+    $borrower->setPaymentMode(PaymentMode::OVER_THE_COUNTER);
+    expect($borrower->getPaymentMode())->toBe(PaymentMode::OVER_THE_COUNTER);
+    $borrower->setPaymentMode(PaymentMode::ONLINE);
+    expect($borrower->getPaymentMode())->toBe(PaymentMode::ONLINE);
 });
 
 it('can have co-borrowers, and can determine the youngest amongst', function () {

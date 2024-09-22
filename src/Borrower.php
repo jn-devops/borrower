@@ -3,6 +3,7 @@
 namespace Homeful\Borrower;
 
 use Homeful\Borrower\Traits\{HasCoBorrowers, HasDates, HasDeprecated, HasLocation, HasNumbers};
+use Homeful\Borrower\Enums\PaymentMode;
 use Illuminate\Support\Collection;
 use Illuminate\Support\{Arr, Str};
 use Illuminate\Support\Carbon;
@@ -18,8 +19,6 @@ class Borrower
 
     protected Price $gross_monthly_income;
 
-    protected bool $regional = false;
-
     protected Collection $co_borrowers;
 
     protected Carbon $birthdate;
@@ -27,6 +26,8 @@ class Borrower
     public int $maximum_age_at_loan_maturity = 70; //years old
 
     public string $contact_id;
+
+    public PaymentMode $payment_mode;
 
     public function __construct()
     {
@@ -49,6 +50,18 @@ class Borrower
     public function getContactId(): string
     {
         return $this->contact_id ?? Str::uuid();
+    }
+
+    public function setPaymentMode(PaymentMode $mode): self
+    {
+        $this->payment_mode = $mode;
+
+        return $this;
+    }
+
+    public function getPaymentMode(): PaymentMode
+    {
+        return $this->payment_mode ?? PaymentMode::ONLINE;
     }
 
     /**
