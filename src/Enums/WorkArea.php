@@ -2,6 +2,7 @@
 
 namespace Homeful\Borrower\Enums;
 
+/** @deprecated  */
 enum WorkArea
 {
     case HUC;

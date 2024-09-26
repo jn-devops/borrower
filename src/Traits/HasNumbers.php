@@ -3,6 +3,8 @@
 namespace Homeful\Borrower\Traits;
 
 use Homeful\Borrower\Classes\DisposableModifier;
+use Homeful\Borrower\Classes\AffordabilityRates;
+use Homeful\Common\Enums\WorkArea;
 use Homeful\Property\Property;
 use Whitecube\Price\Price;
 use Brick\Money\Money;
@@ -25,6 +27,9 @@ trait HasNumbers
         return $this;
     }
 
+    /**
+     * @return Price
+     */
     public function getGrossMonthlyIncome(): Price
     {
         return $this->gross_monthly_income;
@@ -44,9 +49,34 @@ trait HasNumbers
         return $this;
     }
 
+    /**
+     * @param Property $property
+     * @return Price
+     */
     public function getMonthlyDisposableIncome(Property $property): Price
     {
         return (new Price($this->gross_monthly_income->inclusive()))
             ->addModifier('effective-value', DisposableModifier::class, $property);
+    }
+
+    /**
+     * @return AffordabilityRates
+     */
+    public function getAffordabilityRates(): AffordabilityRates
+    {
+        $gmi = $this->getGrossMonthlyIncome()->inclusive()->getAmount()->toFloat();
+
+        return match($this->getWorkArea()) {
+            WorkArea::HUC => match(true) {
+                $gmi <=  15000.0 => new AffordabilityRates(0.0300, 3),
+                $gmi <=  17500.0 => new AffordabilityRates(0.0650, 5),
+                default => new AffordabilityRates(0.0625, 3)
+            },
+            WorkArea::REGION => match(true) {
+                $gmi <=  12000.0 => new AffordabilityRates(0.0300, 3),
+                $gmi <=  14000.0 =>  new AffordabilityRates(0.0650, 5),
+                default => new AffordabilityRates(0.0625, 3)
+            },
+        };
     }
 }

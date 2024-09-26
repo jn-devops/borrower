@@ -2,9 +2,12 @@
 
 use Homeful\Borrower\Exceptions\MaximumBorrowingAgeBreached;
 use Homeful\Borrower\Exceptions\MinimumBorrowingAgeNotMet;
-use Homeful\Borrower\Enums\{PaymentMode, WorkArea};
+use Homeful\Borrower\Classes\AffordabilityRates;
+use Homeful\Common\Classes\{Assert, Input};
 use Homeful\Borrower\Enums\EmploymentType;
 use Homeful\Borrower\Data\BorrowerData;
+use Homeful\Borrower\Enums\PaymentMode;
+use Homeful\Common\Enums\WorkArea;
 use Homeful\Borrower\Borrower;
 use Homeful\Property\Property;
 use Illuminate\Support\Carbon;
@@ -185,3 +188,25 @@ it('has contact id', function () {
     $borrower->setContactId($contact_id);
     expect($borrower->getContactId())->toBe($contact_id);
 });
+
+
+dataset('affordability matrix', function () {
+   return [
+       fn() => [Input::WORK_AREA => WorkArea::REGION, Input::WAGES => 12000, Assert::REPRICING_FREQUENCY => 3, Assert::INTEREST_RATE => 0.0300],
+       fn() => [Input::WORK_AREA => WorkArea::REGION, Input::WAGES => 14000, Assert::REPRICING_FREQUENCY => 5, Assert::INTEREST_RATE => 0.0650],
+       fn() => [Input::WORK_AREA => WorkArea::REGION, Input::WAGES => 14001, Assert::REPRICING_FREQUENCY => 3, Assert::INTEREST_RATE => 0.0625],
+       fn() => [Input::WORK_AREA => WorkArea::HUC, Input::WAGES => 15000, Assert::REPRICING_FREQUENCY => 3, Assert::INTEREST_RATE => 0.0300],
+       fn() => [Input::WORK_AREA => WorkArea::HUC, Input::WAGES => 17500, Assert::REPRICING_FREQUENCY => 5, Assert::INTEREST_RATE => 0.0650],
+       fn() => [Input::WORK_AREA => WorkArea::HUC, Input::WAGES => 17501, Assert::REPRICING_FREQUENCY => 3, Assert::INTEREST_RATE => 0.0625],
+   ];
+});
+
+it('has affordability rates', function (array $params) {
+    $borrower = new Borrower;
+    $borrower->setGrossMonthlyIncome($params[Input::WAGES]);
+    $borrower->setWorkArea($params[Input::WORK_AREA]);
+    with($borrower->getAffordabilityRates(), function (AffordabilityRates $rates) use ($params) {
+        expect($rates->interest_rate)->toBe($params[Assert::INTEREST_RATE]);
+        expect($rates->repricing_frequency)->toBe($params[Assert::REPRICING_FREQUENCY]);
+    });
+})->with('affordability matrix');

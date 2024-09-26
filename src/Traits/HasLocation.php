@@ -3,14 +3,11 @@
 namespace Homeful\Borrower\Traits;
 
 use Homeful\Borrower\Enums\EmploymentType;
-use Homeful\Borrower\Enums\WorkArea;
+use Homeful\Common\Enums\WorkArea;
 use Homeful\Borrower\Borrower;
 
 trait HasLocation
 {
-    protected bool $regional = false;
-    protected EmploymentType $employment_type;
-
     /**
      * @param bool $value
      * @return Borrower|HasLocation
@@ -30,11 +27,18 @@ trait HasLocation
         return $this->regional ?? config('borrower.default_regional');
     }
 
+    /**
+     * @return WorkArea
+     */
     public function getWorkArea(): WorkArea
     {
         return WorkArea::fromRegional($this->getRegional());
     }
 
+    /**
+     * @param WorkArea $area
+     * @return Borrower|HasLocation
+     */
     public function setWorkArea(WorkArea $area): self
     {
         $this->regional = $area == WorkArea::REGION;
@@ -42,6 +46,10 @@ trait HasLocation
         return $this;
     }
 
+    /**
+     * @param EmploymentType $type
+     * @return Borrower|HasLocation
+     */
     public function setEmploymentType(EmploymentType $type): self
     {
         $this->employment_type = $type;
@@ -49,6 +57,9 @@ trait HasLocation
         return $this;
     }
 
+    /**
+     * @return EmploymentType
+     */
     public function getEmploymentType(): EmploymentType
     {
         return $this->employment_type ?? EmploymentType::LOCAL_PRIVATE;
