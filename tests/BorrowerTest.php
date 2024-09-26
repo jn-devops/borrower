@@ -181,7 +181,9 @@ it('has borrower data', function (Borrower $borrower) {
         'work_area' => $borrower->getWorkArea()->getName(),
         'employment_type' => $borrower->getEmploymentType()->getName(),
         'formatted_age' => $borrower->getFormattedAge(),
-        'payment_mode' => $borrower->getPaymentMode()->getName()
+        'payment_mode' => $borrower->getPaymentMode()->getName(),
+        'maturity_date' => $borrower->getMaturityDate()->format('Y-m-d'),
+        'age_at_maturity_date' => $borrower->getAgeAtMaturityDate()
     ]);
 })->with('borrower');
 

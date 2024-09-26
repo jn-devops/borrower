@@ -19,7 +19,9 @@ class BorrowerData extends Data
         public string $work_area,
         public string $employment_type,
         public string $formatted_age,
-        public string $payment_mode
+        public string $payment_mode,
+        public string $maturity_date,
+        public float $age_at_maturity_date
     ) {}
 
     public static function fromObject(Borrower $borrower): self
@@ -33,7 +35,9 @@ class BorrowerData extends Data
             work_area: $borrower->getWorkArea()->getName(),
             employment_type: $borrower->getEmploymentType()->getName(),
             formatted_age: $borrower->getFormattedAge(),
-            payment_mode: $borrower->getPaymentMode()->getName()
+            payment_mode: $borrower->getPaymentMode()->getName(),
+            maturity_date: $borrower->getMaturityDate()->format('Y-m-d'),
+            age_at_maturity_date: $borrower->getAgeAtMaturityDate()
         );
     }
 }

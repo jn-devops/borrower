@@ -48,6 +48,9 @@ use DateTime;
  * @method AffordabilityRates getAffordabilityRates()
  * @method Borrower setPaymentMode(PaymentMode $mode)
  * @method PaymentMode getPaymentMode()
+ * @method Borrower setMaturityDate(Carbon $value)
+ * @method Carbon getMaturityDate()
+ * @method float getAgeAtMaturityDate()
  */
 class Borrower
 {
