@@ -2,10 +2,9 @@
 
 namespace Homeful\Borrower\Traits;
 
-use Homeful\Borrower\Borrower;
 use Homeful\Borrower\Enums\PaymentMode;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
+use Illuminate\Support\{Arr, Str};
+use Homeful\Borrower\Borrower;
 
 trait HasProperties
 {

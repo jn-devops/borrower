@@ -24,6 +24,7 @@ use DateTime;
  * @property PaymentMode $payment_mode
  * @property bool $regional
  * @property EmploymentType $employment_type
+ * @property Carbon $maturity_date
  *
  * @method Borrower addCoBorrower(Borrower $co_borrower)
  * @method Collection getCoBorrowers()
@@ -72,6 +73,8 @@ class Borrower
     protected bool $regional = false;
 
     protected EmploymentType $employment_type;
+
+    protected Carbon $maturity_date;
 
     public function __construct()
     {

@@ -214,3 +214,8 @@ it('has affordability rates', function (array $params) {
         expect($rates->repricing_frequency)->toBe($params[Assert::REPRICING_FREQUENCY]);
     });
 })->with('affordability matrix');
+
+it('has a maturity date', function (Borrower $borrower) {
+    $borrower->setMaturityDate(Carbon::parse('2029-03-17'));
+    expect($borrower->getAgeAtMaturityDate())->toBe(30.0);
+})->with('borrower');

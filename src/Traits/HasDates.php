@@ -84,4 +84,28 @@ trait HasDates
     {
         return formatted_age($this->getBirthdate(), $reference);
     }
+
+    /**
+     * @param Carbon $value
+     * @return HasDates|Borrower
+     */
+    public function setMaturityDate(Carbon $value): self
+    {
+        $this->maturity_date = $value;
+
+        return $this;
+    }
+
+    /**
+     * @return Carbon
+     */
+    public function getMaturityDate(): Carbon
+    {
+        return $this->maturity_date ?? now();
+    }
+
+    public function getAgeAtMaturityDate(): float
+    {
+        return round($this->getBirthdate()->diffInYears($this->getMaturityDate()), 1, PHP_ROUND_HALF_UP);
+    }
 }
