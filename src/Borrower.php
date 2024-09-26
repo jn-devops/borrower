@@ -3,9 +3,8 @@
 namespace Homeful\Borrower;
 
 use Homeful\Borrower\Traits\{HasCoBorrowers, HasDates, HasDeprecated, HasLocation, HasNumbers, HasProperties};
-use Homeful\Borrower\Classes\AffordabilityRates;
-use Homeful\Borrower\Enums\EmploymentType;
-use Homeful\Borrower\Enums\PaymentMode;
+use Homeful\Borrower\Classes\{AffordabilityRates, LendingInstitution};
+use Homeful\Borrower\Enums\{EmploymentType, PaymentMode};
 use Homeful\Common\Enums\WorkArea;
 use Illuminate\Support\Collection;
 use Homeful\Property\Property;
@@ -78,6 +77,8 @@ class Borrower
     protected EmploymentType $employment_type;
 
     protected Carbon $maturity_date;
+
+    protected LendingInstitution $lending_institution;
 
     public function __construct()
     {

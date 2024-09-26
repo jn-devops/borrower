@@ -2,6 +2,7 @@
 
 use Homeful\Borrower\Exceptions\MaximumBorrowingAgeBreached;
 use Homeful\Borrower\Exceptions\MinimumBorrowingAgeNotMet;
+use Homeful\Borrower\Classes\LendingInstitution;
 use Homeful\Borrower\Classes\AffordabilityRates;
 use Homeful\Common\Classes\{Assert, Input};
 use Homeful\Borrower\Enums\EmploymentType;
@@ -129,38 +130,31 @@ it('has monthly income and disposable monthly income', function (Property $prope
 })->with('property');
 
 it('has borrowing ages', function () {
-    expect(config('borrower.borrowing_age.minimum'))->toBe(18);
-    expect(Borrower::getMinimumBorrowingAge())->toBe(config('borrower.borrowing_age.minimum'));
-    expect(config('borrower.borrowing_age.maximum.hdmf'))->toBe(60);
-    expect(config('borrower.borrowing_age.maximum.rcbc'))->toBe(60);
-    expect(config('borrower.borrowing_age.maximum.cbc'))->toBe(60);
-    expect(config('borrower.borrowing_age.maximum.default'))->toBe(60);
-    expect(Borrower::getMaximumBorrowingAge('hdmf'))->toBe(config('borrower.borrowing_age.maximum.hdmf'));
-    expect(Borrower::getMaximumBorrowingAge('rcbc'))->toBe(config('borrower.borrowing_age.maximum.rcbc'));
-    expect(Borrower::getMaximumBorrowingAge('cbc'))->toBe(config('borrower.borrowing_age.maximum.cbc'));
-    expect(Borrower::getMaximumBorrowingAge())->toBe(config('borrower.borrowing_age.maximum.default'));
-
-    $age = Borrower::getMinimumBorrowingAge();
+    $borrower = new Borrower;
+    $borrower->setLendingInstitution(new LendingInstitution);
+    $age = $borrower->getMinimumBorrowingAge();
     $birthdate = Carbon::now()->addYears(-1 * $age);
-    $borrower = (new Borrower)->setBirthdate($birthdate);
+    $borrower = $borrower->setBirthdate($birthdate);
     expect((int) floor($borrower->getBirthdate()->diffInYears()))->toBe($age);
 
-    $age = Borrower::getMaximumBorrowingAge();
+    $age = $borrower->getMaximumBorrowingAge();
     $birthdate = Carbon::now()->addYears(-1 * $age);
-    $borrower = (new Borrower)->setBirthdate($birthdate);
+    $borrower = $borrower->setBirthdate($birthdate);
     expect((int) floor($borrower->getBirthdate()->diffInYears()))->toBe($age);
 });
 
 it('has a legal age', function () {
     $borrower = new Borrower;
-    $years = Borrower::getMinimumBorrowingAge() - 1;
+    $borrower->setLendingInstitution(new LendingInstitution);
+    $years = $borrower->getMinimumBorrowingAge() - 1;
     $birthdate = Carbon::today()->addYears(-$years);
     $borrower->setBirthdate($birthdate);
 })->expectException(MinimumBorrowingAgeNotMet::class);
 
 it('has a retirement age', function () {
     $borrower = new Borrower;
-    $years = Borrower::getMaximumBorrowingAge() + 1;
+    $borrower->setLendingInstitution(new LendingInstitution);
+    $years = $borrower->getMaximumBorrowingAge() + 1;
     $birthdate = Carbon::today()->addYears(-$years);
     $borrower->setBirthdate($birthdate);
 })->expectException(MaximumBorrowingAgeBreached::class);
@@ -183,7 +177,9 @@ it('has borrower data', function (Borrower $borrower) {
         'formatted_age' => $borrower->getFormattedAge(),
         'payment_mode' => $borrower->getPaymentMode()->getName(),
         'maturity_date' => $borrower->getMaturityDate()->format('Y-m-d'),
-        'age_at_maturity_date' => $borrower->getAgeAtMaturityDate()
+        'age_at_maturity_date' => $borrower->getAgeAtMaturityDate(),
+        'lending_institution_alias' => $borrower->getLendingInstitution()->getAlias(),
+        'lending_institution_name' => $borrower->getLendingInstitution()->getName(),
     ]);
 })->with('borrower');
 
@@ -221,3 +217,10 @@ it('has a maturity date', function (Borrower $borrower) {
     $borrower->setMaturityDate(Carbon::parse('2029-03-17'));
     expect($borrower->getAgeAtMaturityDate())->toBe(30.0);
 })->with('borrower');
+
+it('has a landing institution', function () {
+    $borrower = new Borrower;
+    $lending_institution = new LendingInstitution;
+    $borrower->setLendingInstitution($lending_institution);
+    expect($borrower->getLendingInstitution())->toBe($lending_institution);
+});

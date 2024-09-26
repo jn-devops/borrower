@@ -2,9 +2,10 @@
 
 namespace Homeful\Borrower\Traits;
 
+use Homeful\Borrower\Classes\LendingInstitution;
 use Homeful\Borrower\Enums\PaymentMode;
-use Illuminate\Support\{Arr, Str};
 use Homeful\Borrower\Borrower;
+use Illuminate\Support\Str;
 
 trait HasProperties
 {
@@ -42,18 +43,35 @@ trait HasProperties
     /**
      * @return int
      */
-    static public function getMinimumBorrowingAge(): int
+    public function getMinimumBorrowingAge(): int
     {
-        return config('borrower.borrowing_age.minimum');
+        return $this->getLendingInstitution()->getMinimumBorrowingAge();
     }
 
     /**
-     * TODO: change this, don't use arrays e.g., see getAffordabilityRates()
-     * @param string $lending_institution
      * @return int
      */
-    static public function getMaximumBorrowingAge(string $lending_institution = 'default'): int
+    public function getMaximumBorrowingAge(): int
     {
-        return Arr::get(config('borrower.borrowing_age.maximum'), $lending_institution, config('borrower.borrowing_age.maximum.default'));
+        return $this->getLendingInstitution()->getMaximumBorrowingAge();
+    }
+
+    /**
+     * @param LendingInstitution $institution
+     * @return Borrower|HasProperties
+     */
+    public function setLendingInstitution(LendingInstitution $institution): self
+    {
+        $this->lending_institution = $institution;
+
+        return $this;
+    }
+
+    /**
+     * @return LendingInstitution
+     */
+    public function getLendingInstitution(): LendingInstitution
+    {
+        return $this->lending_institution ?? new LendingInstitution;
     }
 }
