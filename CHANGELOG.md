@@ -2,6 +2,10 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.1.4 - 2024-09-26
+
+refactor, add affordability rates
+
 ## #v1.1.3 - 2024-09-22
 
 refactor and add getFormattedAge
