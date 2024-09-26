@@ -15,7 +15,11 @@ class BorrowerData extends Data
         public bool $regional,
         public string $birthdate,
         public float $age,
-        public string $as_of_date
+        public string $as_of_date,
+        public string $work_area,
+        public string $employment_type,
+        public string $formatted_age,
+        public string $payment_mode
     ) {}
 
     public static function fromObject(Borrower $borrower): self
@@ -25,7 +29,11 @@ class BorrowerData extends Data
             regional: $borrower->getRegional(),
             birthdate: $borrower->getBirthdate()->format('Y-m-d'),
             age: $borrower->getAge(),
-            as_of_date: Carbon::today()->format('Y-m-d')
+            as_of_date: Carbon::today()->format('Y-m-d'),
+            work_area: $borrower->getWorkArea()->getName(),
+            employment_type: $borrower->getEmploymentType()->getName(),
+            formatted_age: $borrower->getFormattedAge(),
+            payment_mode: $borrower->getPaymentMode()->getName()
         );
     }
 }

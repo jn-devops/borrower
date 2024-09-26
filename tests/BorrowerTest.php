@@ -178,6 +178,10 @@ it('has borrower data', function (Borrower $borrower) {
         'birthdate' => $borrower->getBirthdate()->format('Y-m-d'),
         'age' => $borrower->getAge(),
         'as_of_date' => Carbon::today()->format('Y-m-d'),
+        'work_area' => $borrower->getWorkArea()->getName(),
+        'employment_type' => $borrower->getEmploymentType()->getName(),
+        'formatted_age' => $borrower->getFormattedAge(),
+        'payment_mode' => $borrower->getPaymentMode()->getName()
     ]);
 })->with('borrower');
 

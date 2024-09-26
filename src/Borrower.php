@@ -2,19 +2,17 @@
 
 namespace Homeful\Borrower;
 
-use Brick\Money\Money;
-use DateTime;
-use Homeful\Borrower\Traits\{HasCoBorrowers, HasDates, HasDeprecated, HasLocation, HasNumbers};
+use Homeful\Borrower\Traits\{HasCoBorrowers, HasDates, HasDeprecated, HasLocation, HasNumbers, HasProperties};
 use Homeful\Borrower\Classes\AffordabilityRates;
 use Homeful\Borrower\Enums\EmploymentType;
 use Homeful\Borrower\Enums\PaymentMode;
 use Homeful\Common\Enums\WorkArea;
-use Homeful\Property\Property;
 use Illuminate\Support\Collection;
-use Illuminate\Support\{Arr, Str};
+use Homeful\Property\Property;
 use Illuminate\Support\Carbon;
 use Whitecube\Price\Price;
-
+use Brick\Money\Money;
+use DateTime;
 
 /**
  * Class Property
@@ -47,11 +45,14 @@ use Whitecube\Price\Price;
  * @method Borrower addOtherSourcesOfIncome(string $name, Money|float $value)
  * @method Price getMonthlyDisposableIncome(Property $property)
  * @method AffordabilityRates getAffordabilityRates()
+ * @method Borrower setPaymentMode(PaymentMode $mode)
+ * @method PaymentMode getPaymentMode()
  */
 class Borrower
 {
     use HasCoBorrowers;
     use HasDeprecated;
+    use HasProperties;
     use HasLocation;
     use HasNumbers;
     use HasDates;
@@ -75,53 +76,5 @@ class Borrower
     public function __construct()
     {
         $this->co_borrowers = new Collection;
-    }
-
-    /**
-     * @return $this
-     */
-    public function setContactId(string $contact_id): self
-    {
-        $this->contact_id = $contact_id;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getContactId(): string
-    {
-        return $this->contact_id ?? Str::uuid();
-    }
-
-    public function setPaymentMode(PaymentMode $mode): self
-    {
-        $this->payment_mode = $mode;
-
-        return $this;
-    }
-
-    public function getPaymentMode(): PaymentMode
-    {
-        return $this->payment_mode ?? PaymentMode::ONLINE;
-    }
-
-    /**
-     * @return int
-     */
-    static public function getMinimumBorrowingAge(): int
-    {
-        return config('borrower.borrowing_age.minimum');
-    }
-
-    /**
-     * TODO: change this, don't use arrays e.g., see getAffordabilityRates()
-     * @param string $lending_institution
-     * @return int
-     */
-    static public function getMaximumBorrowingAge(string $lending_institution = 'default'): int
-    {
-        return Arr::get(config('borrower.borrowing_age.maximum'), $lending_institution, config('borrower.borrowing_age.maximum.default'));
     }
 }
