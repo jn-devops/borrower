@@ -2,6 +2,10 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.1.9 - 2024-09-27
+
+add getMaximumTermAllowed
+
 ## #v1.1.8 - 2024-09-26
 
 add lending institution
