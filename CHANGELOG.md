@@ -2,6 +2,10 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.2.0 - 2024-09-27
+
+add repricing
+
 ## #v1.1.9 - 2024-09-27
 
 add getMaximumTermAllowed
