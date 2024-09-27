@@ -24,11 +24,14 @@ class BorrowerData extends Data
         public float $age_at_maturity_date,
         public string $lending_institution_alias,
         public string $lending_institution_name,
-        public int $maximum_term_allowed
+        public int $maximum_term_allowed,
+        public int $repricing_frequency,
+        public float $interest_rate
     ) {}
 
     public static function fromObject(Borrower $borrower): self
     {
+        $rates = $borrower->getAffordabilityRates();
         return new self(
             gross_monthly_income: $borrower->getGrossMonthlyIncome()->inclusive()->getAmount()->toFloat(),
             regional: $borrower->getRegional(),
@@ -43,7 +46,9 @@ class BorrowerData extends Data
             age_at_maturity_date: $borrower->getAgeAtMaturityDate(),
             lending_institution_alias: $borrower->getLendingInstitution()->getAlias(),
             lending_institution_name: $borrower->getLendingInstitution()->getName(),
-            maximum_term_allowed: $borrower->getMaximumTermAllowed()
+            maximum_term_allowed: $borrower->getMaximumTermAllowed(),
+            repricing_frequency: $rates->getRepricingFrequency(),
+            interest_rate: $rates->getInterestRate()
         );
     }
 }

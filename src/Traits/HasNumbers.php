@@ -64,19 +64,6 @@ trait HasNumbers
      */
     public function getAffordabilityRates(): AffordabilityRates
     {
-        $gmi = $this->getGrossMonthlyIncome()->inclusive()->getAmount()->toFloat();
-
-        return match($this->getWorkArea()) {
-            WorkArea::HUC => match(true) {
-                $gmi <=  15000.0 => new AffordabilityRates(0.0300, 3),
-                $gmi <=  17500.0 => new AffordabilityRates(0.0650, 5),
-                default => new AffordabilityRates(0.0625, 3)
-            },
-            WorkArea::REGION => match(true) {
-                $gmi <=  12000.0 => new AffordabilityRates(0.0300, 3),
-                $gmi <=  14000.0 =>  new AffordabilityRates(0.0650, 5),
-                default => new AffordabilityRates(0.0625, 3)
-            },
-        };
+        return AffordabilityRates::defaultFromWork($this->getWorkArea(), $this->getGrossMonthlyIncome());
     }
 }

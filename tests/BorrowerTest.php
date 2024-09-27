@@ -3,8 +3,6 @@
 use Homeful\Borrower\Exceptions\MaximumBorrowingAgeBreached;
 use Homeful\Borrower\Exceptions\MinimumBorrowingAgeNotMet;
 use Homeful\Borrower\Classes\LendingInstitution;
-use Homeful\Borrower\Classes\AffordabilityRates;
-use Homeful\Common\Classes\{Assert, Input};
 use Homeful\Borrower\Enums\EmploymentType;
 use Homeful\Borrower\Data\BorrowerData;
 use Homeful\Borrower\Enums\PaymentMode;
@@ -180,7 +178,9 @@ it('has borrower data', function (Borrower $borrower) {
         'age_at_maturity_date' => $borrower->getAgeAtMaturityDate(),
         'lending_institution_alias' => $borrower->getLendingInstitution()->getAlias(),
         'lending_institution_name' => $borrower->getLendingInstitution()->getName(),
-        'maximum_term_allowed' => $borrower->getMaximumTermAllowed()
+        'maximum_term_allowed' => $borrower->getMaximumTermAllowed(),
+        'repricing_frequency' => $borrower->getAffordabilityRates()->getRepricingFrequency(),
+        'interest_rate' => $borrower->getAffordabilityRates()->getInterestRate()
     ]);
 })->with('borrower');
 
@@ -191,28 +191,6 @@ it('has contact id', function () {
     $borrower->setContactId($contact_id);
     expect($borrower->getContactId())->toBe($contact_id);
 });
-
-
-dataset('affordability matrix', function () {
-   return [
-       fn() => [Input::WORK_AREA => WorkArea::REGION, Input::WAGES => 12000, Assert::REPRICING_FREQUENCY => 3, Assert::INTEREST_RATE => 0.0300],
-       fn() => [Input::WORK_AREA => WorkArea::REGION, Input::WAGES => 14000, Assert::REPRICING_FREQUENCY => 5, Assert::INTEREST_RATE => 0.0650],
-       fn() => [Input::WORK_AREA => WorkArea::REGION, Input::WAGES => 14001, Assert::REPRICING_FREQUENCY => 3, Assert::INTEREST_RATE => 0.0625],
-       fn() => [Input::WORK_AREA => WorkArea::HUC, Input::WAGES => 15000, Assert::REPRICING_FREQUENCY => 3, Assert::INTEREST_RATE => 0.0300],
-       fn() => [Input::WORK_AREA => WorkArea::HUC, Input::WAGES => 17500, Assert::REPRICING_FREQUENCY => 5, Assert::INTEREST_RATE => 0.0650],
-       fn() => [Input::WORK_AREA => WorkArea::HUC, Input::WAGES => 17501, Assert::REPRICING_FREQUENCY => 3, Assert::INTEREST_RATE => 0.0625],
-   ];
-});
-
-it('has affordability rates', function (array $params) {
-    $borrower = new Borrower;
-    $borrower->setGrossMonthlyIncome($params[Input::WAGES]);
-    $borrower->setWorkArea($params[Input::WORK_AREA]);
-    with($borrower->getAffordabilityRates(), function (AffordabilityRates $rates) use ($params) {
-        expect($rates->interest_rate)->toBe($params[Assert::INTEREST_RATE]);
-        expect($rates->repricing_frequency)->toBe($params[Assert::REPRICING_FREQUENCY]);
-    });
-})->with('affordability matrix');
 
 it('has a maturity date', function (Borrower $borrower) {
     $borrower->setMaturityDate(Carbon::parse('2029-03-17'));
