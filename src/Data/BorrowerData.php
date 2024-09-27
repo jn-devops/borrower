@@ -24,6 +24,7 @@ class BorrowerData extends Data
         public float $age_at_maturity_date,
         public string $lending_institution_alias,
         public string $lending_institution_name,
+        public int $maximum_term_allowed
     ) {}
 
     public static function fromObject(Borrower $borrower): self
@@ -41,7 +42,8 @@ class BorrowerData extends Data
             maturity_date: $borrower->getMaturityDate()->format('Y-m-d'),
             age_at_maturity_date: $borrower->getAgeAtMaturityDate(),
             lending_institution_alias: $borrower->getLendingInstitution()->getAlias(),
-            lending_institution_name: $borrower->getLendingInstitution()->getName()
+            lending_institution_name: $borrower->getLendingInstitution()->getName(),
+            maximum_term_allowed: $borrower->getMaximumTermAllowed()
         );
     }
 }

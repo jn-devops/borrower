@@ -24,6 +24,7 @@ use DateTime;
  * @property bool $regional
  * @property EmploymentType $employment_type
  * @property Carbon $maturity_date
+ * @property LendingInstitution $lending_institution
  *
  * @method Borrower addCoBorrower(Borrower $co_borrower)
  * @method Collection getCoBorrowers()
@@ -50,6 +51,11 @@ use DateTime;
  * @method Borrower setMaturityDate(Carbon $value)
  * @method Carbon getMaturityDate()
  * @method float getAgeAtMaturityDate()
+ * @method Borrower setLendingInstitution(LendingInstitution $institution)
+ * @method LendingInstitution getLendingInstitution()
+ * @method int getMinimumBorrowingAge()
+ * @method int getMaximumBorrowingAge()
+ * @method int getMaximumTermAllowed()
  */
 class Borrower
 {

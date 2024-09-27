@@ -3,6 +3,7 @@
 namespace Homeful\Borrower\Classes;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 
 class LendingInstitution
 {
@@ -60,5 +61,17 @@ class LendingInstitution
     public function getMaximumBorrowingAge(): int
     {
         return $this->getAttribute('borrowing_age.maximum');
+    }
+
+    public function getMaximumTerm(): int
+    {
+        return $this->getAttribute('maximum_term');
+    }
+
+    public function getMaximumTermAllowed(Carbon $birthdate): int
+    {
+        $age = round($birthdate->diffInYears(), 1);
+
+        return min(($this->getMaximumBorrowingAge()  - $age), $this->getMaximumTerm());
     }
 }

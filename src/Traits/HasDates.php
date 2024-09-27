@@ -108,4 +108,12 @@ trait HasDates
     {
         return round($this->getBirthdate()->diffInYears($this->getMaturityDate()), 1, PHP_ROUND_HALF_UP);
     }
+
+    /**
+     * @return int
+     */
+    public function getMaximumTermAllowed(): int
+    {
+        return $this->getLendingInstitution()->getMaximumTermAllowed($this->getBirthdate());
+    }
 }

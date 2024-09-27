@@ -11,6 +11,7 @@ return [
                 'minimum' => 18,
                 'maximum' => 60,
             ],
+            'maximum_term' => 30
         ],
         'rcbc' => [
             'name' => 'Rizal Commercial Banking Corporation',
@@ -20,6 +21,7 @@ return [
                 'minimum' => 18,
                 'maximum' => 60,
             ],
+            'maximum_term' => 20
         ],
         'cbc' => [
             'name' => 'China Banking Corporation',
@@ -29,6 +31,7 @@ return [
                 'minimum' => 18,
                 'maximum' => 60,
             ],
+            'maximum_term' => 20
         ],
     ],
     'default_lending_institution' => env('DEFAULT_LENDING_INSTITUTION', 'hdmf'),

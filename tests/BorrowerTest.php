@@ -180,6 +180,7 @@ it('has borrower data', function (Borrower $borrower) {
         'age_at_maturity_date' => $borrower->getAgeAtMaturityDate(),
         'lending_institution_alias' => $borrower->getLendingInstitution()->getAlias(),
         'lending_institution_name' => $borrower->getLendingInstitution()->getName(),
+        'maximum_term_allowed' => $borrower->getMaximumTermAllowed()
     ]);
 })->with('borrower');
 
@@ -224,3 +225,20 @@ it('has a landing institution', function () {
     $borrower->setLendingInstitution($lending_institution);
     expect($borrower->getLendingInstitution())->toBe($lending_institution);
 });
+
+dataset('birth dates', function () {
+    return [
+        fn() => ['institution' => 'hdmf', 'birthdate' => Carbon::parse('1999-03-17'), 'guess_max_term_allowed' => 30],
+        fn() => ['institution' => 'rcbc', 'birthdate' => Carbon::parse('1999-03-17'), 'guess_max_term_allowed' => 20],
+        fn() => ['institution' => 'hdmf', 'birthdate' => Carbon::parse('1970-04-21'), 'guess_max_term_allowed' => 5],
+        fn() => ['institution' => 'rcbc', 'birthdate' => Carbon::parse('1970-04-21'), 'guess_max_term_allowed' => 5],
+        fn() => ['institution' => 'hdmf', 'birthdate' => Carbon::parse('1964-04-21'), 'guess_max_term_allowed' => 0],
+    ];
+});
+
+it('has a maximum term allowed', function (Borrower $borrower, array $params) {
+    $borrower = (new Borrower)
+        ->setBirthdate($params['birthdate'])
+        ->setLendingInstitution(new LendingInstitution($params['institution']));
+    expect($borrower->getMaximumTermAllowed())->toBe($params['guess_max_term_allowed']);
+})->with('borrower', 'birth dates');
