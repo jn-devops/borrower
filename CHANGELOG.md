@@ -2,6 +2,10 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.3.9 - 2024-09-29
+
+property is now an optional argument in borrower construct
+
 ## #v1.2.0 - 2024-09-27
 
 add repricing
