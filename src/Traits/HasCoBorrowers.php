@@ -29,11 +29,12 @@ trait HasCoBorrowers
     }
 
     /**
-     * @param Property $property
+     * @param Property|null $property
      * @return Price
      */
-    public function getJointMonthlyDisposableIncome(Property $property): Price
+    public function getJointMonthlyDisposableIncome(Property $property = null): Price
     {
+        $property = $this->getProperty() ?: $property;
         $monthly_disposable_income = new Price($this->getMonthlyDisposableIncome($property)->inclusive());
         $this->co_borrowers->each(function (Borrower $co_borrower) use ($monthly_disposable_income, $property) {
             $monthly_disposable_income->addModifier('co-borrower', $co_borrower->getMonthlyDisposableIncome($property)->inclusive(), roundingMode: RoundingMode::CEILING);

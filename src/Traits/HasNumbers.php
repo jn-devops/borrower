@@ -50,11 +50,13 @@ trait HasNumbers
     }
 
     /**
-     * @param Property $property
+     * @param Property|null $property
      * @return Price
      */
-    public function getMonthlyDisposableIncome(Property $property): Price
+    public function getMonthlyDisposableIncome(Property $property = null): Price
     {
+        $property = $this->getProperty() ?: $property;
+
         return (new Price($this->gross_monthly_income->inclusive()))
             ->addModifier('effective-value', DisposableModifier::class, $property);
     }
@@ -66,4 +68,26 @@ trait HasNumbers
     {
         return AffordabilityRates::defaultFromWork($this->getWorkArea(), $this->getGrossMonthlyIncome());
     }
+
+    //    protected function getDefaultAnnualInterestRate(Price $total_contract_price, Price $gross_monthly_income, bool $regional): float
+//    {
+//        $tcp = $total_contract_price->inclusive()->getAmount()->toFloat();
+//        $gmi = $gross_monthly_income->inclusive()->getAmount()->toFloat();
+//
+//        return match($this->getMarketSegment()) {
+//            MarketSegment::SOCIALIZED, MarketSegment::ECONOMIC => match (true) {
+//                $tcp <= 750000 => $regional
+//                    ? ($gmi <= 12000 ? 0.030 : 0.0625)
+//                    : ($gmi <= 14500 ? 0.030 : 0.0625),
+//                $tcp <= 800000 => $regional
+//                    ? ($gmi <= 13000 ? 0.030 : 0.0625)
+//                    : ($gmi <= 15500 ? 0.030 : 0.0625),
+//                $tcp <= 850000 => $regional
+//                    ? ($gmi <= 15000 ? 0.030 : 0.0625)
+//                    : ($gmi <= 16500 ? 0.030 : 0.0625),
+//                default => 0.0625,
+//            },
+//            MarketSegment::OPEN => 0.07,
+//        };
+//    }
 }

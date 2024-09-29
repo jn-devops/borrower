@@ -28,7 +28,7 @@ use DateTime;
  *
  * @method Borrower addCoBorrower(Borrower $co_borrower)
  * @method Collection getCoBorrowers()
- * @method Price getJointMonthlyDisposableIncome(Property $property)
+ * @method Price getJointMonthlyDisposableIncome(Property $property = null)
  * @method Borrower setRegional(bool $value)
  * @method bool getRegional()
  * @method Borrower setWorkArea(WorkArea $area)()
@@ -44,7 +44,7 @@ use DateTime;
  * @method Borrower setGrossMonthlyIncome(Price|Money|float $value)
  * @method Price getGrossMonthlyIncome()
  * @method Borrower addOtherSourcesOfIncome(string $name, Money|float $value)
- * @method Price getMonthlyDisposableIncome(Property $property)
+ * @method Price getMonthlyDisposableIncome(Property $property = null)
  * @method AffordabilityRates getAffordabilityRates()
  * @method Borrower setPaymentMode(PaymentMode $mode)
  * @method PaymentMode getPaymentMode()
@@ -86,8 +86,24 @@ class Borrower
 
     protected LendingInstitution $lending_institution;
 
-    public function __construct()
+    protected Property $property;
+
+    public function __construct(Property $property = null)
     {
         $this->co_borrowers = new Collection;
+        if ($property)
+            $this->property = $property;
+    }
+
+    public function setProperty(Property $property): self
+    {
+        $this->property = $property;
+
+        return $this;
+    }
+
+    public function getProperty(): ?Property
+    {
+        return $this->property ?? null;
     }
 }

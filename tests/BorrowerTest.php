@@ -23,12 +23,6 @@ dataset('property', function () {
     ];
 });
 
-dataset('borrower', function () {
-    return [
-        [fn () => (new Borrower)->setBirthdate(Carbon::parse('1999-03-17'))],
-    ];
-});
-
 dataset('borrower_with_co-borrowers', function () {
     return [
         [fn () => (new Borrower)->setBirthdate(Carbon::parse('1999-03-17'))->setGrossMonthlyIncome(Money::of(15000.0, 'PHP'))
@@ -38,20 +32,20 @@ dataset('borrower_with_co-borrowers', function () {
     ];
 });
 
-it('has age and formatted age', function () {
-    $borrower = (new Borrower)->setBirthdate(Carbon::parse('1999-03-17'));
+it('has age and formatted age', function (Property $property) {
+    $borrower = (new Borrower($property))->setBirthdate(Carbon::parse('1999-03-17'));
     expect($borrower->getFormattedAge(Carbon::parse('2029-03-17')))->toBe('30 years old');
     expect($borrower->getAge())->toBe(round(Carbon::parse('1999-03-17')->diffInYears(Carbon::now()), 1, PHP_ROUND_HALF_UP));
-});
+})->with('property');
 
-it('can set age', function () {
-    $borrower = (new Borrower)->setAge(54);
+it('can set age', function (Property $property) {
+    $borrower = (new Borrower($property))->setAge(54);
     expect($borrower->getAge())->toBe(54.0);
     expect($borrower->getBirthdate()->format('Y-m-d'))->toBe(Carbon::now()->addYears(-54)->format('Y-m-d'));
-});
+})->with('property');
 
-it('has regional, work area', function () {
-    $borrower = new Borrower;
+it('has regional, work area', function (Property $property) {
+    $borrower = new Borrower($property);
     expect($borrower->getRegional())->toBe(config('borrower.default_regional'));
     expect(config('borrower.default_regional'))->toBe(false);
     expect($borrower->getRegional())->toBe(false);
@@ -62,10 +56,10 @@ it('has regional, work area', function () {
     expect($borrower->getRegional())->toBeFalse();
     $borrower->setWorkArea(WorkArea::REGION);
     expect($borrower->getRegional())->toBeTrue();
-});
+})->with('property');
 
-it('has employment type', function () {
-    $borrower = new Borrower;
+it('has employment type', function (Property $property) {
+    $borrower = new Borrower($property);
     expect($borrower->getEmploymentType())->toBe(EmploymentType::LOCAL_PRIVATE);
     $borrower->setEmploymentType(EmploymentType::LOCAL_GOVERNMENT);
     expect($borrower->getEmploymentType())->toBe(EmploymentType::LOCAL_GOVERNMENT);
@@ -75,10 +69,10 @@ it('has employment type', function () {
     expect($borrower->getEmploymentType())->toBe(EmploymentType::BUSINESS);
     $borrower->setEmploymentType(EmploymentType::LOCAL_PRIVATE);
     expect($borrower->getEmploymentType())->toBe(EmploymentType::LOCAL_PRIVATE);
-});
+})->with('property');
 
-it('has payment mode', function () {
-    $borrower = new Borrower;
+it('has payment mode', function (Property $property) {
+    $borrower = new Borrower($property);
     expect($borrower->getPaymentMode())->toBe(PaymentMode::ONLINE);
     $borrower->setPaymentMode(PaymentMode::SALARY_DEDUCTION);
     expect($borrower->getPaymentMode())->toBe(PaymentMode::SALARY_DEDUCTION);
@@ -86,20 +80,21 @@ it('has payment mode', function () {
     expect($borrower->getPaymentMode())->toBe(PaymentMode::OVER_THE_COUNTER);
     $borrower->setPaymentMode(PaymentMode::ONLINE);
     expect($borrower->getPaymentMode())->toBe(PaymentMode::ONLINE);
-});
+})->with('property');
 
-it('can have co-borrowers, and can determine the youngest amongst', function () {
-    $borrower = (new Borrower)->setBirthdate(Carbon::parse('1999-03-17'));
-    $co_borrower[0] = (new Borrower)->setBirthdate(Carbon::parse('2001-03-17'));
-    $co_borrower[1] = (new Borrower)->setBirthdate(Carbon::parse('2000-03-17'));
+it('can have co-borrowers, and can determine the youngest amongst', function (Property $property) {
+    $borrower = (new Borrower($property))->setBirthdate(Carbon::parse('1999-03-17'));
+    $co_borrower[0] = (new Borrower($property))->setBirthdate(Carbon::parse('2001-03-17'));
+    $co_borrower[1] = (new Borrower($property))->setBirthdate(Carbon::parse('2000-03-17'));
     $borrower->addCoBorrower($co_borrower[0])->addCoBorrower($co_borrower[1]);
     $borrower->getCoBorrowers()->each(function ($value, $index) use ($co_borrower) {
         expect($value)->toBe($co_borrower[$index]);
     });
     expect($borrower->getOldestAmongst())->toBe($borrower);
-});
+})->with('property');
 
 it('has gross monthly income, monthly disposable income and joint monthly disposable income', function (Borrower $borrower, Property $property) {
+    $borrower->setProperty($property);
     expect($borrower->getGrossMonthlyIncome()->compareTo(Money::of(15000.0, 'PHP')))->toBe(0);
     expect($property->getTotalContractPrice()->inclusive()->getAmount()->toFloat())->toBe(849999.0);
     expect($borrower->getMonthlyDisposableIncome($property)
@@ -113,22 +108,22 @@ it('has gross monthly income, monthly disposable income and joint monthly dispos
             default => null
         };
     });
-    expect($borrower->getJointMonthlyDisposableIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4800.0 + 4480.0 + 4160.0);
+    expect($borrower->getJointMonthlyDisposableIncome()->inclusive()->getAmount()->toFloat())->toBe(4800.0 + 4480.0 + 4160.0);
 })->with('borrower_with_co-borrowers', 'property');
 
 it('has monthly income and disposable monthly income', function (Property $property) {
-    $borrower = new Borrower;
+    $borrower = new Borrower($property);
     $borrower->setGrossMonthlyIncome($salary = Money::of(12000.0, 'PHP'));
     $borrower->addOtherSourcesOfIncome('commissions', $commissions = Money::of(2000.0, 'PHP'));
     expect($borrower->getGrossMonthlyIncome()->base()->compareTo($salary))->toBe(0);
     expect($borrower->getGrossMonthlyIncome()->inclusive()->compareTo($salary->plus($commissions)))->toBe(0);
-    expect($borrower->getMonthlyDisposableIncome($property)
+    expect($borrower->getMonthlyDisposableIncome()
         ->compareTo($borrower->getGrossMonthlyIncome()->inclusive()->multipliedBy($property->getDisposableIncomeRequirementMultiplier())))
         ->toBe(0);
 })->with('property');
 
-it('has borrowing ages', function () {
-    $borrower = new Borrower;
+it('has borrowing ages', function (Property $property) {
+    $borrower = new Borrower($property);
     $borrower->setLendingInstitution(new LendingInstitution);
     $age = $borrower->getMinimumBorrowingAge();
     $birthdate = Carbon::now()->addYears(-1 * $age);
@@ -139,26 +134,26 @@ it('has borrowing ages', function () {
     $birthdate = Carbon::now()->addYears(-1 * $age);
     $borrower = $borrower->setBirthdate($birthdate);
     expect((int) floor($borrower->getBirthdate()->diffInYears()))->toBe($age);
-});
+})->with('property');
 
-it('has a legal age', function () {
-    $borrower = new Borrower;
+it('has a legal age', function (Property $property) {
+    $borrower = new Borrower($property);
     $borrower->setLendingInstitution(new LendingInstitution);
     $years = $borrower->getMinimumBorrowingAge() - 1;
     $birthdate = Carbon::today()->addYears(-$years);
     $borrower->setBirthdate($birthdate);
-})->expectException(MinimumBorrowingAgeNotMet::class);
+})->with('property')->expectException(MinimumBorrowingAgeNotMet::class);
 
-it('has a retirement age', function () {
+it('has a retirement age', function (Property $property) {
     $borrower = new Borrower;
     $borrower->setLendingInstitution(new LendingInstitution);
     $years = $borrower->getMaximumBorrowingAge() + 1;
     $birthdate = Carbon::today()->addYears(-$years);
     $borrower->setBirthdate($birthdate);
-})->expectException(MaximumBorrowingAgeBreached::class);
+})->with('property')->expectException(MaximumBorrowingAgeBreached::class);
 
-it('has borrower data', function (Borrower $borrower) {
-    $borrower = new Borrower;
+it('has borrower data', function (Property $property) {
+    $borrower = new Borrower($property);
     $borrower->setBirthdate(Carbon::parse('1999-03-17'))->setGrossMonthlyIncome($salary = Money::of(12000.0, 'PHP'));
     $data = BorrowerData::fromObject($borrower);
     expect($data->gross_monthly_income)->toBe($borrower->getGrossMonthlyIncome()->inclusive()->getAmount()->toFloat());
@@ -182,27 +177,28 @@ it('has borrower data', function (Borrower $borrower) {
         'repricing_frequency' => $borrower->getAffordabilityRates()->getRepricingFrequency(),
         'interest_rate' => $borrower->getAffordabilityRates()->getInterestRate()
     ]);
-})->with('borrower');
+})->with('property');
 
-it('has contact id', function () {
-    $borrower = new Borrower;
+it('has contact id', function (Property $property) {
+    $borrower = new Borrower($property);
     expect($borrower->getContactId())->toBeUuid();
     $contact_id = 'ABC-123';
     $borrower->setContactId($contact_id);
     expect($borrower->getContactId())->toBe($contact_id);
-});
+})->with('property');
 
-it('has a maturity date', function (Borrower $borrower) {
+it('has a maturity date', function (Property $property) {
+    $borrower = (new Borrower($property))->setBirthdate(Carbon::parse('1999-03-17'));
     $borrower->setMaturityDate(Carbon::parse('2029-03-17'));
     expect($borrower->getAgeAtMaturityDate())->toBe(30.0);
-})->with('borrower');
+})->with('property');
 
-it('has a landing institution', function () {
-    $borrower = new Borrower;
+it('has a landing institution', function (Property $property) {
+    $borrower = new Borrower($property);
     $lending_institution = new LendingInstitution;
     $borrower->setLendingInstitution($lending_institution);
     expect($borrower->getLendingInstitution())->toBe($lending_institution);
-});
+})->with('property');
 
 dataset('birth dates', function () {
     return [
@@ -214,9 +210,9 @@ dataset('birth dates', function () {
     ];
 });
 
-it('has a maximum term allowed', function (Borrower $borrower, array $params) {
-    $borrower = (new Borrower)
+it('has a maximum term allowed', function (Property $property, array $params) {
+    $borrower = (new Borrower($property))
         ->setBirthdate($params['birthdate'])
         ->setLendingInstitution(new LendingInstitution($params['institution']));
     expect($borrower->getMaximumTermAllowed())->toBe($params['guess_max_term_allowed']);
-})->with('borrower', 'birth dates');
+})->with('property', 'birth dates');
