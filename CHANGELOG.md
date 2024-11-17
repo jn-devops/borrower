@@ -2,6 +2,10 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.3.1 - 2024-11-17
+
+add exception messages
+
 ## #v1.3.9 - 2024-09-29
 
 property is now an optional argument in borrower construct
