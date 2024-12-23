@@ -6,12 +6,14 @@ use Homeful\Borrower\Classes\LendingInstitution;
 use Homeful\Borrower\Enums\EmploymentType;
 use Homeful\Borrower\Data\BorrowerData;
 use Homeful\Borrower\Enums\PaymentMode;
+use Homeful\Common\Classes\Amount;
 use Homeful\Common\Enums\WorkArea;
 use Homeful\Borrower\Borrower;
 use Homeful\Property\Property;
 use Illuminate\Support\Carbon;
 use Whitecube\Price\Price;
 use Brick\Money\Money;
+
 
 beforeEach(function () {
     $this->multiplier = 0.32;
@@ -216,3 +218,13 @@ it('has a maximum term allowed', function (Property $property, array $params) {
         ->setLendingInstitution(new LendingInstitution($params['institution']));
     expect($borrower->getMaximumTermAllowed())->toBe($params['guess_max_term_allowed']);
 })->with('property', 'birth dates');
+
+it('implements buyer interface', function () {
+    $borrower = (new Borrower)->setBirthdate(Carbon::parse('1999-03-17'))
+        ->setGrossMonthlyIncome(Money::of(15000.0, 'PHP'));
+    expect($borrower->getWages()->compareTo($borrower->getGrossMonthlyIncome()->inclusive()))->toBe(Amount::EQUAL);
+    expect($borrower->getMobile()->equals('09173171999', 'PH'))->toBeTrue();
+    expect($borrower->getSellerCommissionCode())->toBe('AA537');
+    expect($borrower->getContactId())->toBeString();
+
+});

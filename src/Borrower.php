@@ -5,6 +5,9 @@ namespace Homeful\Borrower;
 use Homeful\Borrower\Traits\{HasCoBorrowers, HasDates, HasDeprecated, HasLocation, HasNumbers, HasProperties};
 use Homeful\Borrower\Classes\{AffordabilityRates, LendingInstitution};
 use Homeful\Borrower\Enums\{EmploymentType, PaymentMode};
+use Homeful\Common\Interfaces\BorrowerInterface;
+use libphonenumber\PhoneNumberFormat;
+use Propaganistas\LaravelPhone\PhoneNumber;
 use Homeful\Common\Enums\WorkArea;
 use Illuminate\Support\Collection;
 use Homeful\Property\Property;
@@ -14,7 +17,7 @@ use Brick\Money\Money;
 use DateTime;
 
 /**
- * Class Property
+ * Class Borrower
  *
  * @property Price $gross_monthly_income
  * @property Collection $co_borrowers
@@ -57,7 +60,7 @@ use DateTime;
  * @method int getMaximumBorrowingAge()
  * @method int getMaximumTermAllowed()
  */
-class Borrower
+class Borrower implements BorrowerInterface
 {
     use HasCoBorrowers;
     use HasDeprecated;
@@ -105,5 +108,30 @@ class Borrower
     public function getProperty(): ?Property
     {
         return $this->property ?? null;
+    }
+
+    /**
+     * @deprecated
+     */
+    public function getWages(): Money|float
+    {
+        return $this->getGrossMonthlyIncome()->inclusive();
+    }
+
+    /**
+     * @deprecated
+     */
+    public function getMobile(): PhoneNumber
+    {
+        return phone('09173171999', 'PH');
+    }
+
+
+    /**
+     * @deprecated
+     */
+    public function getSellerCommissionCode(): string
+    {
+        return config('borrower.default_seller_code');
     }
 }

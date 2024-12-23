@@ -35,6 +35,7 @@ return [
         ],
     ],
     'default_lending_institution' => env('DEFAULT_LENDING_INSTITUTION', 'hdmf'),
+    'default_seller_code' => env('DEFAULT_SELLER_CODE', 'AA537'),
 //    'borrowing_age' => [
 //        'minimum' => 18,
 //        'maximum' => [
