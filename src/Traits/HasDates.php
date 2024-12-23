@@ -4,6 +4,7 @@ namespace Homeful\Borrower\Traits;
 
 use Homeful\Borrower\Exceptions\MaximumBorrowingAgeBreached;
 use Homeful\Borrower\Exceptions\MinimumBorrowingAgeNotMet;
+use Homeful\Borrower\Exceptions\BirthdateNotSet;
 use Homeful\Borrower\Borrower;
 use Illuminate\Support\Carbon;
 use DateTime;
@@ -32,9 +33,13 @@ trait HasDates
 
     /**
      * @return Carbon
+     * @throws BirthdateNotSet
      */
     public function getBirthdate(): Carbon
     {
+        if (!isset($this->birthdate))
+            throw new BirthdateNotSet;
+
         return $this->birthdate;
     }
 
@@ -55,6 +60,7 @@ trait HasDates
 
     /**
      * @return float
+     * @throws BirthdateNotSet
      */
     public function getAge(): float
     {
@@ -63,6 +69,7 @@ trait HasDates
 
     /**
      * @return Borrower
+     * @throws BirthdateNotSet
      */
     public function getOldestAmongst(): Borrower
     {
@@ -79,6 +86,7 @@ trait HasDates
     /**
      * @param DateTime|null $reference
      * @return string
+     * @throws BirthdateNotSet
      */
     public function getFormattedAge(DateTime $reference = null): string
     {
@@ -104,6 +112,10 @@ trait HasDates
         return $this->maturity_date ?? now();
     }
 
+    /**
+     * @return float
+     * @throws BirthdateNotSet
+     */
     public function getAgeAtMaturityDate(): float
     {
         return round($this->getBirthdate()->diffInYears($this->getMaturityDate()), 1, PHP_ROUND_HALF_UP);
@@ -111,6 +123,7 @@ trait HasDates
 
     /**
      * @return int
+     * @throws BirthdateNotSet
      */
     public function getMaximumTermAllowed(): int
     {

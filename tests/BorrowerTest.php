@@ -3,6 +3,7 @@
 use Homeful\Borrower\Exceptions\MaximumBorrowingAgeBreached;
 use Homeful\Borrower\Exceptions\MinimumBorrowingAgeNotMet;
 use Homeful\Borrower\Classes\LendingInstitution;
+use Homeful\Borrower\Exceptions\BirthdateNotSet;
 use Homeful\Borrower\Enums\EmploymentType;
 use Homeful\Borrower\Data\BorrowerData;
 use Homeful\Borrower\Enums\PaymentMode;
@@ -13,7 +14,6 @@ use Homeful\Property\Property;
 use Illuminate\Support\Carbon;
 use Whitecube\Price\Price;
 use Brick\Money\Money;
-
 
 beforeEach(function () {
     $this->multiplier = 0.32;
@@ -226,5 +226,9 @@ it('implements buyer interface', function () {
     expect($borrower->getMobile()->equals('09173171999', 'PH'))->toBeTrue();
     expect($borrower->getSellerCommissionCode())->toBe('AA537');
     expect($borrower->getContactId())->toBeString();
-
 });
+
+it('throws error if birthdate is not set', function (){
+    $borrower = (new Borrower)->setGrossMonthlyIncome(Money::of(15000.0, 'PHP'));
+    expect($borrower->getMaximumTermAllowed())->toBeGreaterThan(25);
+})->expectException(BirthdateNotSet::class);
