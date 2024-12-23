@@ -2,6 +2,10 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.3.2 - 2024-12-23
+
+implement borrower interface
+
 ## #v1.3.1 - 2024-11-17
 
 add exception messages
