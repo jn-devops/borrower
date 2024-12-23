@@ -2,6 +2,10 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.3.3 - 2024-12-23
+
+introduce birthdate not set exception'
+
 ## #v1.3.2 - 2024-12-23
 
 implement borrower interface
