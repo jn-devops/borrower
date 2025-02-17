@@ -63,15 +63,26 @@ class LendingInstitution
         return $this->getAttribute('borrowing_age.maximum');
     }
 
+    public function getOffset(): int
+    {
+        return $this->getAttribute('borrowing_age.offset');
+    }
+
     public function getMaximumTerm(): int
     {
         return $this->getAttribute('maximum_term');
     }
 
-    public function getMaximumTermAllowed(Carbon $birthdate): int
+    public function getMaximumPayingAge(): int
+    {
+        return $this->getAttribute('maximum_paying_age');
+    }
+
+    public function getMaximumTermAllowed(Carbon $birthdate, ?int $override_maximum_paying_age = null): int
     {
         $age = round($birthdate->diffInYears(), 1);
+        $maximum_paying_age = $override_maximum_paying_age ?: $this->getMaximumPayingAge();
 
-        return min(($this->getMaximumBorrowingAge()  - $age), $this->getMaximumTerm());
+        return min(($maximum_paying_age + $this->getOffset() - $age), $this->getMaximumTerm());
     }
 }

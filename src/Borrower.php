@@ -6,7 +6,6 @@ use Homeful\Borrower\Traits\{HasCoBorrowers, HasDates, HasDeprecated, HasLocatio
 use Homeful\Borrower\Classes\{AffordabilityRates, LendingInstitution};
 use Homeful\Borrower\Enums\{EmploymentType, PaymentMode};
 use Homeful\Common\Interfaces\BorrowerInterface;
-use libphonenumber\PhoneNumberFormat;
 use Propaganistas\LaravelPhone\PhoneNumber;
 use Homeful\Common\Enums\WorkArea;
 use Illuminate\Support\Collection;
@@ -58,7 +57,7 @@ use DateTime;
  * @method LendingInstitution getLendingInstitution()
  * @method int getMinimumBorrowingAge()
  * @method int getMaximumBorrowingAge()
- * @method int getMaximumTermAllowed()
+ * @method int getMaximumTermAllowed(?int $override_maximum_paying_age = null)
  */
 class Borrower implements BorrowerInterface
 {

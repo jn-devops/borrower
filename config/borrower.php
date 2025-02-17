@@ -10,8 +10,10 @@ return [
             'borrowing_age' => [
                 'minimum' => 18,
                 'maximum' => 60,
+                'offset' => 0,
             ],
-            'maximum_term' => 30
+            'maximum_term' => 30,
+            'maximum_paying_age' => 70
         ],
         'rcbc' => [
             'name' => 'Rizal Commercial Banking Corporation',
@@ -20,8 +22,10 @@ return [
             'borrowing_age' => [
                 'minimum' => 18,
                 'maximum' => 60,
+                'offset' => -1,
             ],
-            'maximum_term' => 20
+            'maximum_term' => 20,
+            'maximum_paying_age' => 65
         ],
         'cbc' => [
             'name' => 'China Banking Corporation',
@@ -30,19 +34,13 @@ return [
             'borrowing_age' => [
                 'minimum' => 18,
                 'maximum' => 60,
+                'offset' => -1,
             ],
-            'maximum_term' => 20
+            'maximum_term' => 20,
+            'maximum_paying_age' => 65
         ],
     ],
     'default_lending_institution' => env('DEFAULT_LENDING_INSTITUTION', 'hdmf'),
     'default_seller_code' => env('DEFAULT_SELLER_CODE', 'AA537'),
-//    'borrowing_age' => [
-//        'minimum' => 18,
-//        'maximum' => [
-//            'hdmf' => 60,
-//            'rcbc' => 60,
-//            'cbc' => 60,
-//            'default' => env('DEFAULT_BORROWING_MAXIMUM_AGE', 60),
-//        ]
-//    ],
+//    'default_borrowing_age_offset' => env('DEFAULT_BORROWING_AGE_OFFSET', -1),
 ];

@@ -122,11 +122,12 @@ trait HasDates
     }
 
     /**
+     * @param int|null $override_maximum_paying_age
      * @return int
      * @throws BirthdateNotSet
      */
-    public function getMaximumTermAllowed(): int
+    public function getMaximumTermAllowed(?int $override_maximum_paying_age = null): int
     {
-        return $this->getLendingInstitution()->getMaximumTermAllowed($this->getBirthdate());
+        return $this->getLendingInstitution()->getMaximumTermAllowed($this->getBirthdate(), $override_maximum_paying_age);
     }
 }

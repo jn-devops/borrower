@@ -202,22 +202,40 @@ it('has a landing institution', function (Property $property) {
     expect($borrower->getLendingInstitution())->toBe($lending_institution);
 })->with('property');
 
-dataset('birth dates', function () {
+dataset('institution ages', function () {
     return [
-        fn() => ['institution' => 'hdmf', 'birthdate' => Carbon::parse('1999-03-17'), 'guess_max_term_allowed' => 30],
-        fn() => ['institution' => 'rcbc', 'birthdate' => Carbon::parse('1999-03-17'), 'guess_max_term_allowed' => 20],
-        fn() => ['institution' => 'hdmf', 'birthdate' => Carbon::parse('1970-04-21'), 'guess_max_term_allowed' => 5],
-        fn() => ['institution' => 'rcbc', 'birthdate' => Carbon::parse('1970-04-21'), 'guess_max_term_allowed' => 5],
-        fn() => ['institution' => 'hdmf', 'birthdate' => Carbon::parse('1964-04-21'), 'guess_max_term_allowed' => 0],
+        fn() => ['institution' => 'hdmf', 'age' => 25, 'maximum_paying_age' => 70, 'override_maximum_paying_age' => 70, 'off_set' =>  0, 'guess_max_term_allowed' => 30    ],
+        fn() => ['institution' => 'hdmf', 'age' => 25, 'maximum_paying_age' => 70, 'override_maximum_paying_age' => 65, 'off_set' =>  0, 'guess_max_term_allowed' => 30    ],
+        fn() => ['institution' => 'rcbc', 'age' => 25, 'maximum_paying_age' => 65, 'override_maximum_paying_age' => 65, 'off_set' => -1, 'guess_max_term_allowed' => 20    ],
+        fn() => ['institution' => 'hdmf', 'age' => 40, 'maximum_paying_age' => 70, 'override_maximum_paying_age' => 70, 'off_set' =>  0, 'guess_max_term_allowed' => 30    ],
+        fn() => ['institution' => 'hdmf', 'age' => 40, 'maximum_paying_age' => 70, 'override_maximum_paying_age' => 65, 'off_set' =>  0, 'guess_max_term_allowed' => 25    ],
+        fn() => ['institution' => 'rcbc', 'age' => 40, 'maximum_paying_age' => 65, 'override_maximum_paying_age' => 65, 'off_set' => -1, 'guess_max_term_allowed' => 20    ],
+        fn() => ['institution' => 'hdmf', 'age' => 45, 'maximum_paying_age' => 70, 'override_maximum_paying_age' => 70, 'off_set' =>  0, 'guess_max_term_allowed' => 25    ],
+        fn() => ['institution' => 'hdmf', 'age' => 45, 'maximum_paying_age' => 70, 'override_maximum_paying_age' => 65, 'off_set' =>  0, 'guess_max_term_allowed' => 20    ],
+        fn() => ['institution' => 'rcbc', 'age' => 45, 'maximum_paying_age' => 65, 'override_maximum_paying_age' => 65, 'off_set' => -1, 'guess_max_term_allowed' => 20 - 1],
+        fn() => ['institution' => 'hdmf', 'age' => 50, 'maximum_paying_age' => 70, 'override_maximum_paying_age' => 70, 'off_set' =>  0, 'guess_max_term_allowed' => 20    ],
+        fn() => ['institution' => 'hdmf', 'age' => 50, 'maximum_paying_age' => 70, 'override_maximum_paying_age' => 65, 'off_set' =>  0, 'guess_max_term_allowed' => 15    ],
+        fn() => ['institution' => 'rcbc', 'age' => 50, 'maximum_paying_age' => 65, 'override_maximum_paying_age' => 65, 'off_set' => -1, 'guess_max_term_allowed' => 15 - 1],
+        fn() => ['institution' => 'hdmf', 'age' => 55, 'maximum_paying_age' => 70, 'override_maximum_paying_age' => 70, 'off_set' =>  0, 'guess_max_term_allowed' => 15    ],
+        fn() => ['institution' => 'hdmf', 'age' => 55, 'maximum_paying_age' => 70, 'override_maximum_paying_age' => 65, 'off_set' =>  0, 'guess_max_term_allowed' => 10    ],
+        fn() => ['institution' => 'rcbc', 'age' => 55, 'maximum_paying_age' => 65, 'override_maximum_paying_age' => 65, 'off_set' => -1, 'guess_max_term_allowed' => 10 - 1],
+        fn() => ['institution' => 'hdmf', 'age' => 60, 'maximum_paying_age' => 70, 'override_maximum_paying_age' => 70, 'off_set' =>  0, 'guess_max_term_allowed' => 10    ],
+        fn() => ['institution' => 'hdmf', 'age' => 60, 'maximum_paying_age' => 70, 'override_maximum_paying_age' => 65, 'off_set' =>  0, 'guess_max_term_allowed' => 5     ],
+        fn() => ['institution' => 'rcbc', 'age' => 60, 'maximum_paying_age' => 65, 'override_maximum_paying_age' => 65, 'off_set' => -1, 'guess_max_term_allowed' => 5 -  1],
     ];
 });
 
 it('has a maximum term allowed', function (Property $property, array $params) {
     $borrower = (new Borrower($property))
-        ->setBirthdate($params['birthdate'])
+        ->setAge($params['age'])
         ->setLendingInstitution(new LendingInstitution($params['institution']));
-    expect($borrower->getMaximumTermAllowed())->toBe($params['guess_max_term_allowed']);
-})->with('property', 'birth dates');
+    expect($borrower->getLendingInstitution()->getMaximumPayingAge())->toBe($params['maximum_paying_age']);
+    $override_maximum_paying_age = ($borrower->getLendingInstitution()->getMaximumPayingAge() != $params['override_maximum_paying_age'])
+        ? $params['override_maximum_paying_age']
+        : null;
+    expect($borrower->getLendingInstitution()->getOffset())->toBe($params['off_set']);
+    expect($borrower->getMaximumTermAllowed($override_maximum_paying_age))->toBe($params['guess_max_term_allowed']);
+})->with('property', 'institution ages');
 
 it('implements buyer interface', function () {
     $borrower = (new Borrower)->setBirthdate(Carbon::parse('1999-03-17'))
