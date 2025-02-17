@@ -11,6 +11,8 @@ use DateTime;
 
 trait HasDates
 {
+    protected ?int $override_maximum_paying_age = null;
+
     /**
      * @param Carbon $value
      * @return HasDates|Borrower
@@ -122,12 +124,30 @@ trait HasDates
     }
 
     /**
+     * @return int|null
+     */
+    public function getOverrideMaximumPayingAge(): ?int
+    {
+        return $this->override_maximum_paying_age;
+    }
+
+    /**
      * @param int|null $override_maximum_paying_age
+     * @return HasDates|Borrower
+     */
+    public function setOverrideMaximumPayingAge(?int $override_maximum_paying_age): self
+    {
+        $this->override_maximum_paying_age = $override_maximum_paying_age;
+
+        return $this;
+    }
+
+    /**
      * @return int
      * @throws BirthdateNotSet
      */
-    public function getMaximumTermAllowed(?int $override_maximum_paying_age = null): int
+    public function getMaximumTermAllowed(): int
     {
-        return $this->getLendingInstitution()->getMaximumTermAllowed($this->getBirthdate(), $override_maximum_paying_age);
+        return $this->getLendingInstitution()->getMaximumTermAllowed($this->getBirthdate(), $this->getOverrideMaximumPayingAge());
     }
 }

@@ -57,7 +57,9 @@ use DateTime;
  * @method LendingInstitution getLendingInstitution()
  * @method int getMinimumBorrowingAge()
  * @method int getMaximumBorrowingAge()
- * @method int getMaximumTermAllowed(?int $override_maximum_paying_age = null)
+ * @method int getMaximumTermAllowed()
+ * @method Borrower setOverrideMaximumPayingAge(?int $override_maximum_paying_age)
+ * @method int getOverrideMaximumPayingAge()
  */
 class Borrower implements BorrowerInterface
 {

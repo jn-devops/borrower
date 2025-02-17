@@ -228,13 +228,13 @@ dataset('institution ages', function () {
 it('has a maximum term allowed', function (Property $property, array $params) {
     $borrower = (new Borrower($property))
         ->setAge($params['age'])
-        ->setLendingInstitution(new LendingInstitution($params['institution']));
+        ->setLendingInstitution(new LendingInstitution($params['institution']))
+        ->setOverrideMaximumPayingAge($params['override_maximum_paying_age'])
+    ;
     expect($borrower->getLendingInstitution()->getMaximumPayingAge())->toBe($params['maximum_paying_age']);
-    $override_maximum_paying_age = ($borrower->getLendingInstitution()->getMaximumPayingAge() != $params['override_maximum_paying_age'])
-        ? $params['override_maximum_paying_age']
-        : null;
+
     expect($borrower->getLendingInstitution()->getOffset())->toBe($params['off_set']);
-    expect($borrower->getMaximumTermAllowed($override_maximum_paying_age))->toBe($params['guess_max_term_allowed']);
+    expect($borrower->getMaximumTermAllowed())->toBe($params['guess_max_term_allowed']);
 })->with('property', 'institution ages');
 
 it('implements buyer interface', function () {
