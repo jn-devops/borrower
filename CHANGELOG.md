@@ -2,6 +2,10 @@
 
 All notable changes to `borrower` will be documented in this file.
 
+## #v1.4.0 - 2025-02-17
+
+add borrowing age offset and maximum paying age
+
 ## #v1.3.3 - 2024-12-23
 
 introduce birthdate not set exception'
