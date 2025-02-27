@@ -42,5 +42,5 @@ return [
     ],
     'default_lending_institution' => env('DEFAULT_LENDING_INSTITUTION', 'hdmf'),
     'default_seller_code' => env('DEFAULT_SELLER_CODE', 'AA537'),
-//    'default_borrowing_age_offset' => env('DEFAULT_BORROWING_AGE_OFFSET', -1),
+    'default_disposable_income_multiplier' => env('DEFAULT_DISPOSABLE_INCOME_MULTIPLIER', 0.35),
 ];

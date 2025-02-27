@@ -100,17 +100,17 @@ it('has gross monthly income, monthly disposable income and joint monthly dispos
     expect($borrower->getGrossMonthlyIncome()->compareTo(Money::of(15000.0, 'PHP')))->toBe(0);
     expect($property->getTotalContractPrice()->inclusive()->getAmount()->toFloat())->toBe(849999.0);
     expect($borrower->getMonthlyDisposableIncome($property)
-        ->compareTo($borrower->getGrossMonthlyIncome()->inclusive()->multipliedBy($property->getDisposableIncomeRequirementMultiplier())))
+        ->compareTo($borrower->getGrossMonthlyIncome()->inclusive()->multipliedBy($borrower->getDisposableIncomeMultiplier())))
         ->toBe(0);
-    expect($borrower->getMonthlyDisposableIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4800.0);
+    expect($borrower->getMonthlyDisposableIncome()->inclusive()->getAmount()->toFloat())->toBe(5250.0); //15,000 * 35%
     $borrower->getCoBorrowers()->each(function ($co_borrower, $index) use ($property) {
         match ($index) {
-            0 => expect($co_borrower->getMonthlyDisposableIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4480.0),
-            1 => expect($co_borrower->getMonthlyDisposableIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4160.0),
+            0 => expect($co_borrower->getMonthlyDisposableIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4900.0), //14,000 * 35%
+            1 => expect($co_borrower->getMonthlyDisposableIncome($property)->inclusive()->getAmount()->toFloat())->toBe(4550.0), //13,000 * 35%
             default => null
         };
     });
-    expect($borrower->getJointMonthlyDisposableIncome()->inclusive()->getAmount()->toFloat())->toBe(4800.0 + 4480.0 + 4160.0);
+    expect($borrower->getJointMonthlyDisposableIncome()->inclusive()->getAmount()->toFloat())->toBe(5250.0 + 4900.0 + 4550.0);
 })->with('borrower_with_co-borrowers', 'property');
 
 it('has monthly income and disposable monthly income', function (Property $property) {
@@ -120,9 +120,35 @@ it('has monthly income and disposable monthly income', function (Property $prope
     expect($borrower->getGrossMonthlyIncome()->base()->compareTo($salary))->toBe(0);
     expect($borrower->getGrossMonthlyIncome()->inclusive()->compareTo($salary->plus($commissions)))->toBe(0);
     expect($borrower->getMonthlyDisposableIncome()
-        ->compareTo($borrower->getGrossMonthlyIncome()->inclusive()->multipliedBy($property->getDisposableIncomeRequirementMultiplier())))
+        ->compareTo($borrower->getGrossMonthlyIncome()->inclusive()->multipliedBy($borrower->getDisposableIncomeMultiplier())))
         ->toBe(0);
 })->with('property');
+
+dataset('disposable income', function() {
+   return [
+       fn() => ['gmi-1' =>  20000, 'gmi-2' => 0, 'tcp' =>  750000, 'guess_disposable_income' =>  20000 * 0.35],
+       fn() => ['gmi-1' =>  20000, 'gmi-2' => 0, 'tcp' =>  800000, 'guess_disposable_income' =>  20000 * 0.35],
+       fn() => ['gmi-1' => 100000, 'gmi-2' => 0, 'tcp' =>  800000, 'guess_disposable_income' => 100000 * 0.35],
+       fn() => ['gmi-1' => 100000, 'gmi-2' => 0, 'tcp' => 1000000, 'guess_disposable_income' => 100000 * 0.35],
+   ];
+});
+
+it('has default disposable income multiplier', function () {
+    $property = (new Property)->setTotalContractPrice(750000)->setDisposableIncomeRequirementMultiplier(0.30);
+    $borrower = (new Borrower($property));
+    expect(config('borrower.default_disposable_income_multiplier'))->toBe(0.35);
+    expect($borrower->getDisposableIncomeMultiplier())->toBe(config('borrower.default_disposable_income_multiplier'));
+    $borrower->setDisposableIncomeMultiplier(0.30);
+    expect($borrower->getDisposableIncomeMultiplier())->toBe(0.30);
+});
+
+it('has guess disposable income', function (array $params) {
+    $property = (new Property)->setTotalContractPrice($params['tcp'])->setDisposableIncomeRequirementMultiplier(0.30);
+    $borrower = (new Borrower($property))
+        ->setGrossMonthlyIncome($params['gmi-1'])
+        ->setAge(30);
+    expect($borrower->getJointMonthlyDisposableIncome()->inclusive()->getAmount()->toFloat())->toBe($params['guess_disposable_income']);
+})->with('disposable income');
 
 it('has borrowing ages', function (Property $property) {
     $borrower = new Borrower($property);
@@ -177,7 +203,10 @@ it('has borrower data', function (Property $property) {
         'lending_institution_name' => $borrower->getLendingInstitution()->getName(),
         'maximum_term_allowed' => $borrower->getMaximumTermAllowed(),
         'repricing_frequency' => $borrower->getAffordabilityRates()->getRepricingFrequency(),
-        'interest_rate' => $borrower->getAffordabilityRates()->getInterestRate()
+        'interest_rate' => $borrower->getAffordabilityRates()->getInterestRate(),
+        'disposable_income_multiplier' => $borrower->getDisposableIncomeMultiplier(),
+        'monthly_disposable_income' => $borrower->getMonthlyDisposableIncome()->inclusive()->getAmount()->toFloat(),
+        'joint_monthly_disposable_income' => $borrower->getJointMonthlyDisposableIncome()->inclusive()->getAmount()->toFloat(),
     ]);
 })->with('property');
 

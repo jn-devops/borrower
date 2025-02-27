@@ -26,7 +26,10 @@ class BorrowerData extends Data
         public string $lending_institution_name,
         public int $maximum_term_allowed,
         public int $repricing_frequency,
-        public float $interest_rate
+        public float $interest_rate,
+        public float $disposable_income_multiplier,
+        public float $monthly_disposable_income,
+        public float $joint_monthly_disposable_income
     ) {}
 
     public static function fromObject(Borrower $borrower): self
@@ -48,7 +51,10 @@ class BorrowerData extends Data
             lending_institution_name: $borrower->getLendingInstitution()->getName(),
             maximum_term_allowed: $borrower->getMaximumTermAllowed(),
             repricing_frequency: $rates->getRepricingFrequency(),
-            interest_rate: $rates->getInterestRate()
+            interest_rate: $rates->getInterestRate(),
+            disposable_income_multiplier: $borrower->getDisposableIncomeMultiplier(),
+            monthly_disposable_income: $borrower->getMonthlyDisposableIncome()->inclusive()->getAmount()->toFloat(),
+            joint_monthly_disposable_income: $borrower->getJointMonthlyDisposableIncome()->inclusive()->getAmount()->toFloat()
         );
     }
 }

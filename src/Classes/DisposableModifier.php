@@ -3,8 +3,8 @@
 namespace Homeful\Borrower\Classes;
 
 use Whitecube\Price\PriceAmendable;
+use Homeful\Borrower\Borrower;
 use Brick\Money\AbstractMoney;
-use Homeful\Property\Property;
 use Brick\Math\RoundingMode;
 use Whitecube\Price\Vat;
 use Brick\Money\Money;
@@ -13,11 +13,11 @@ class DisposableModifier implements PriceAmendable
 {
     protected string $type;
 
-    protected Property $property;
+    protected Borrower $borrower;
 
-    public function __construct(Property $property)
+    public function __construct(Borrower $borrower)
     {
-        $this->property = $property;
+        $this->borrower = $borrower;
     }
 
     public function type(): string
@@ -40,9 +40,9 @@ class DisposableModifier implements PriceAmendable
     public function attributes(): ?array
     {
         return [
-            'market_segment' => $this->property->getMarketSegment()->getName(),
-            'default_disposable_income_requirement_multiplier' => $this->property->getDefaultDisposableIncomeRequirementMultiplier(),
-            'disposable_income_requirement_multiplier' => $this->property->getDisposableIncomeRequirementMultiplier(),
+            'modifier' => 'disposable income multiplier',
+            'disposable_income_multiplier' => $this->borrower->getDisposableIncomeMultiplier(),
+            'default_disposable_income_multiplier' => config('borrower.default_disposable_income_multiplier'),
         ];
     }
 
@@ -56,8 +56,10 @@ class DisposableModifier implements PriceAmendable
      */
     public function apply(AbstractMoney $build, float $units, bool $perUnit, ?AbstractMoney $exclusive = null, ?Vat $vat = null): ?AbstractMoney
     {
+        $disposable_income_multiplier = $this->borrower->getDisposableIncomeMultiplier(); //TODO: get min of property disposable income requirement
+
         if ($build instanceof Money) {
-            return $build->multipliedBy($this->property->getDisposableIncomeRequirementMultiplier(), roundingMode: RoundingMode::CEILING);
+            return $build->multipliedBy($disposable_income_multiplier, roundingMode: RoundingMode::CEILING);
         } else {
             return null;
         }

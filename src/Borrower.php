@@ -30,7 +30,7 @@ use DateTime;
  *
  * @method Borrower addCoBorrower(Borrower $co_borrower)
  * @method Collection getCoBorrowers()
- * @method Price getJointMonthlyDisposableIncome(Property $property = null)
+ * @method Price getJointMonthlyDisposableIncome()
  * @method Borrower setRegional(bool $value)
  * @method bool getRegional()
  * @method Borrower setWorkArea(WorkArea $area)()
@@ -46,7 +46,7 @@ use DateTime;
  * @method Borrower setGrossMonthlyIncome(Price|Money|float $value)
  * @method Price getGrossMonthlyIncome()
  * @method Borrower addOtherSourcesOfIncome(string $name, Money|float $value)
- * @method Price getMonthlyDisposableIncome(Property $property = null)
+ * @method Price getMonthlyDisposableIncome()
  * @method AffordabilityRates getAffordabilityRates()
  * @method Borrower setPaymentMode(PaymentMode $mode)
  * @method PaymentMode getPaymentMode()
@@ -60,6 +60,7 @@ use DateTime;
  * @method int getMaximumTermAllowed()
  * @method Borrower setOverrideMaximumPayingAge(?int $override_maximum_paying_age)
  * @method int getOverrideMaximumPayingAge()
+ * @method float getDisposableIncomeMultiplier()
  */
 class Borrower implements BorrowerInterface
 {
@@ -91,6 +92,8 @@ class Borrower implements BorrowerInterface
     protected LendingInstitution $lending_institution;
 
     protected Property $property;
+
+    protected float $disposable_income_multiplier;
 
     public function __construct(Property $property = null)
     {

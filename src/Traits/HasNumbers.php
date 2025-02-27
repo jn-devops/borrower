@@ -49,16 +49,27 @@ trait HasNumbers
         return $this;
     }
 
+    public function getDisposableIncomeMultiplier(): float
+    {
+        return $this->disposable_income_multiplier ?? config('borrower.default_disposable_income_multiplier', 0.35);//TODO: get required disposable income multiplier instead if property is present
+    }
+
+    public function setDisposableIncomeMultiplier(float $disposable_income_multiplier): self
+    {
+        $this->disposable_income_multiplier = $disposable_income_multiplier;
+
+        return $this;
+    }
+
     /**
-     * @param Property|null $property
      * @return Price
      */
-    public function getMonthlyDisposableIncome(Property $property = null): Price
+    public function getMonthlyDisposableIncome(): Price
     {
-        $property = $this->getProperty() ?: $property;
-
-        return (new Price($this->gross_monthly_income->inclusive()))
-            ->addModifier('effective-value', DisposableModifier::class, $property);
+        return (new Price($this->getGrossMonthlyIncome()->inclusive()))
+            ->addModifier('disposable income multiplier', DisposableModifier::class, $this);
+//        return (new Price($this->gross_monthly_income->inclusive()))
+//            ->addModifier('disposable income multiplier', DisposableModifier::class, $this);
     }
 
     /**
