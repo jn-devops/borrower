@@ -5,80 +5,127 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/jn-devops/borrower/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/jn-devops/borrower/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/jn-devops/borrower.svg?style=flat-square)](https://packagist.org/packages/jn-devops/borrower)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+---
 
-## Support us
+## Description
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/borrower.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/borrower)
+The **Homeful Borrower Package** is a modular PHP package designed for handling borrower-related functionalities. It integrates financial calculations, lending institution rules, and employment types to assess a borrower's loan eligibility.
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
+This package provides:
+- Borrower age and validation rules
+- Employment classification and income tracking
+- Loan eligibility computations based on disposable income
+- Co-borrower support with joint income evaluation
+- Lending institution configurations with maximum loan terms
+- Payment mode management
 
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+---
+
+## Features
+
+### 📌 **Age Management**
+- Retrieve and format borrower age
+- Set borrower age and birthdate
+- Validate minimum and maximum borrowing ages
+
+### 💰 **Employment & Income**
+- Assign employment type (Private, Government, OFW, Business)
+- Compute gross monthly income and disposable income
+- Support for multiple sources of income
+
+### 🏦 **Lending Institutions & Loan Terms**
+- Define lending institutions with borrowing rules
+- Determine maximum loan term based on institution settings
+- Handle institution-specific age restrictions
+
+### 🤝 **Co-Borrowers & Joint Income**
+- Add co-borrowers and calculate total joint disposable income
+- Identify the youngest and oldest co-borrower
+
+### 💳 **Payment & Contact Information**
+- Set payment modes (Online, Salary Deduction, Over-the-Counter)
+- Assign and retrieve borrower contact details
+- Validate and format borrower mobile numbers
+
+---
 
 ## Installation
 
-You can install the package via composer:
+To install via Composer, run:
 
 ```bash
 composer require jn-devops/borrower
 ```
 
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="borrower-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag="borrower-config"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="borrower-views"
-```
+---
 
 ## Usage
 
+### 🔹 Creating a Borrower Instance
+
 ```php
-$borrower = new Homeful\Borrower();
-echo $borrower->echoPhrase('Hello, Homeful!');
+use Homeful\Borrower\Borrower;
+use Illuminate\Support\Carbon;
+use Brick\Money\Money;
+
+$borrower = new Borrower();
+$borrower->setBirthdate(Carbon::parse('1999-03-17'));
+$borrower->setGrossMonthlyIncome(Money::of(15000.0, 'PHP'));
 ```
 
+### 🔹 Setting Employment Type
+
+```php
+use Homeful\Borrower\Enums\EmploymentType;
+
+$borrower->setEmploymentType(EmploymentType::LOCAL_PRIVATE);
+```
+
+### 🔹 Adding Co-Borrowers
+
+```php
+$coBorrower = (new Borrower())->setBirthdate(Carbon::parse('2001-03-17'))->setGrossMonthlyIncome(Money::of(14000.0, 'PHP'));
+
+$borrower->addCoBorrower($coBorrower);
+```
+
+### 🔹 Calculating Disposable Income
+
+```php
+$monthlyDisposableIncome = $borrower->getMonthlyDisposableIncome();
+```
+
+### 🔹 Lending Institution & Loan Term
+
+```php
+use Homeful\Borrower\Classes\LendingInstitution;
+
+$lendingInstitution = new LendingInstitution('hdmf');
+$borrower->setLendingInstitution($lendingInstitution);
+
+$maxTerm = $borrower->getMaximumTermAllowed();
+```
+
+---
+
 ## Testing
+
+Run the tests with:
 
 ```bash
 composer test
 ```
 
-## Changelog
+---
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+## Author
 
-## Contributing
+- **Lester B. Hurtado**  
+  Email: [devops@joy-nostalg.com](mailto:devops@joy-nostalg.com)  
+  GitHub: [jn-devops](https://github.com/jn-devops)
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
-## Credits
-
-- [Lester B. Hurtado](https://github.com/jn-devops)
-- [All Contributors](../../contributors)
+---
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+This package is open-source software licensed under the **MIT License**. See the [License File](LICENSE.md) for details.
